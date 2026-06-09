@@ -1,0 +1,27 @@
+/* #ifdef H5 */
+* {
+	font-family: Arial, "Microsoft YaHei", "微软雅黑";
+}
+
+.uni-page-head-btn {
+	display: inline-flex;
+	align-items: center;
+}
+/* #endif */
+
+// 其他
+.mp-html {
+	// #ifndef MP
+	img,
+	// #endif
+	image {
+		display: block;
+		max-width: 100%;
+	}
+
+	.hl-pre {
+		border-radius: 20rpx;
+		box-sizing: border-box;
+		// width 看页面情况设置，如：calc(100vw - 48rpx)
+	}
+}

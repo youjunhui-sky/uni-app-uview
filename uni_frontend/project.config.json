@@ -1,0 +1,25 @@
+{
+	"setting": {
+		"es6": true,
+		"postcss": true,
+		"minified": true,
+		"uglifyFileName": false,
+		"enhance": true,
+		"packNpmRelationList": [],
+		"babelSetting": {
+			"ignore": [],
+			"disablePlugins": [],
+			"outputPath": ""
+		},
+		"useCompilerPlugins": false,
+		"minifyWXML": true
+	},
+	"compileType": "miniprogram",
+	"simulatorPluginLibVersion": {},
+	"packOptions": {
+		"ignore": [],
+		"include": []
+	},
+	"appid": "wx7022d48fc6e5a3d6",
+	"editorSetting": {}
+}
