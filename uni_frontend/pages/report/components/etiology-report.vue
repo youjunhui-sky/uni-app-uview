@@ -32,8 +32,6 @@
 		<view v-if="list.length === 0 && !loading" class="empty-state">
 			<text>暂时没有代谢评估报告</text>
 		</view>
-
-		<up-loadmore :status="loading ? 'loading' : 'loadmore'" :divider="false" />
 	</view>
 </template>
 

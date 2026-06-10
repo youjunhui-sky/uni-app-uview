@@ -66,6 +66,29 @@
 <up-tabs :list="tabList" keyName="label" />
 ```
 
+**`v-model` 绑定的是当前激活项的索引（数字 0/1/2...），不是 `value` 字段**。判断当前 tab 时必须用数字索引：
+
+```html
+<!-- 正确 ✅ -->
+<up-tabs v-model="activeTab" :list="tabList" keyName="label" />
+<view v-if="activeTab === 0">第一个 tab 的内容</view>
+<view v-if="activeTab === 1">第二个 tab 的内容</view>
+
+<!-- 错误 ❌ -->
+<view v-if="activeTab === 'etiology'">  <!-- 永远是 false -->
+```
+
+**`up-tabs` 没有 Vue 3 的 `model` 声明，不能用普通 `v-model`**（prop 是 `current`，event 是 `update:current`）。必须用**具名 v-model** `v-model:current`，否则点击 tab 时虽然下划线会动，但父组件的绑定值不会更新：
+
+```html
+<!-- 正确 ✅ -->
+<up-tabs v-model:current="activeTab" :list="tabList" keyName="label" />
+
+<!-- 错误 ❌ -->
+<up-tabs v-model="activeTab" :list="tabList" keyName="label" />
+<!-- 点击 tab 父组件 activeTab 不变，v-if 永远只命中初始分支 -->
+```
+
 ### uview-plus card 组件
 `up-card` 组件的内容应该放在 `#body` 插槽中：
 ```html

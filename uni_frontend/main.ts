@@ -5,8 +5,16 @@ import { i18n } from "./locale";
 import "./router";
 
 // uView Plus 插件
-import uviewPlus from "uview-plus";
+import uviewPlus, { setConfig } from "uview-plus";
 import "uview-plus/index.scss";
+
+// 局域网环境：使用本地字体文件替代外网 CDN
+// 必须在 app.use(uviewPlus) 之前调用，u-icon 的 beforeCreate 会读取 config.iconUrl
+setConfig({
+	config: {
+		iconUrl: "/static/uicon-iconfont.ttf",
+	},
+});
 
 // 在应用启动前设置错误过滤
 // #ifdef MP-WEIXIN

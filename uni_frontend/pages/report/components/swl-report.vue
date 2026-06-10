@@ -1,24 +1,51 @@
 <template>
 	<view class="swl-report">
-		<up-card :border="false">
-			<template #head>
-				<up-text bold size="large" text="SWL诊疗" />
-			</template>
-			<view class="swl-content">
-				<up-text size="small" color="info" text="SWL诊疗功能组件" />
+		<view class="swl-empty">
+			<view class="swl-empty__icon">
+				<Icon name="mdi:wrench" :size="64" color="#c0c4cc" />
 			</view>
-		</up-card>
+			<text class="swl-empty__title">功能开发中</text>
+			<text class="swl-empty__desc">SWL 诊疗功能正在开发中，敬请期待</text>
+		</view>
 	</view>
 </template>
 
 <script lang="ts" setup>
+import Icon from "@/components/icon.vue";
 </script>
 
 <style lang="scss" scoped>
 .swl-report {
-	.swl-content {
-		padding: 40rpx 0;
-		text-align: center;
+	.swl-empty {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 120rpx 48rpx;
+
+		&__icon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 144rpx;
+			height: 144rpx;
+			border-radius: 50%;
+			background-color: #f5f7fa;
+		}
+
+		&__title {
+			margin-top: 24rpx;
+			font-size: 32rpx;
+			font-weight: bold;
+			color: #303133;
+		}
+
+		&__desc {
+			margin-top: 16rpx;
+			font-size: 26rpx;
+			color: #909193;
+			text-align: center;
+		}
 	}
 }
 </style>

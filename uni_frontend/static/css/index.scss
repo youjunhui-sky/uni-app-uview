@@ -9,6 +9,20 @@
 }
 /* #endif */
 
+// 局域网环境：注册 uview-plus 图标字体（替代外网 CDN）
+// H5 端 uni.loadFontFace 行为不可靠，改用全局 @font-face 让浏览器随 CSS 同步加载
+@font-face {
+	font-family: "uicon-iconfont";
+	src: url("/static/uicon-iconfont.ttf") format("truetype");
+	font-display: block;
+}
+
+.u-iconfont,
+[class^="uicon-"],
+[class*=" uicon-"] {
+	font-family: "uicon-iconfont" !important;
+}
+
 // 其他
 .mp-html {
 	// #ifndef MP

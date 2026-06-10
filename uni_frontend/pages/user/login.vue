@@ -1,6 +1,12 @@
 <template>
 	<page-wrapper background-color="#fff">
-		<up-navbar title="" :border="false" :bgColor="'transparent'" />
+		<up-navbar title="" :border="false" :bgColor="'transparent'">
+			<template #left>
+				<view class="navbar-home" @tap="goHome">
+					<Icon name="mdi:home" :size="22" color="#333" />
+				</view>
+			</template>
+		</up-navbar>
 
 		<view class="page-login">
 			<!-- Logo -->
@@ -168,6 +174,7 @@ import { useI18n } from "vue-i18n";
 import SmsBtn from "@/components/sms-btn.vue";
 import AgreeBtn from "@/components/agree-btn.vue";
 import pageWrapper from "@/components/page-wrapper.vue";
+import Icon from "@/components/icon.vue";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -256,6 +263,11 @@ async function reqLogin(key: string, data: any) {
 // 登录跳转
 function nextLogin() {
 	router.nextLogin(type.value);
+}
+
+// 返回主页
+function goHome() {
+	router.home();
 }
 
 // 短信登录
@@ -381,6 +393,14 @@ onReady(() => {
 </script>
 
 <style lang="scss" scoped>
+.navbar-home {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 13px;
+	height: 100%;
+}
+
 .page-login {
 	.logo {
 		display: flex;
