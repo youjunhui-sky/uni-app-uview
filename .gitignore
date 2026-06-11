@@ -54,7 +54,8 @@ coverage/
 .cache/
 
 # Claude
-.claude/
+# .claude/ 拆分：settings.json + skills/ 进 git，settings.local.json 不进
+.claude/settings.local.json
 memory/
 
 # Misc

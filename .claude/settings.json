@@ -1,0 +1,38 @@
+{
+  "enablePlugins": [
+    "code-review@claude-plugins-official",
+    "code-simplifier@claude-plugins-official",
+    "typescript-lsp@claude-plugins-official",
+    "javascript-typescript@wshobson-agents",
+    "backend-development@wshobson-agents",
+    "frontend-mobile-development@wshobson-agents",
+    "comprehensive-review@wshobson-agents",
+    "error-debugging@wshobson-agents"
+  ],
+  "permissions": {
+    "allow": [
+      "Bash(npm run dev:h5 *)",
+      "Bash(npm run dev:mp-weixin *)",
+      "Bash(npm run build:h5 *)",
+      "Bash(npm run build:mp-weixin *)",
+      "Bash(npm run deploy *)",
+      "Bash(cd uni_backend_uview && npm run start:dev *)",
+      "Bash(cd uni_backend_uview && npm run start:debug *)",
+      "Bash(cd uni_backend_uview && npm run start:prod *)",
+      "Bash(cd uni_backend_uview && npm run build *)",
+      "Bash(cd uni_backend_uview && npm run lint *)",
+      "Bash(cd uni_backend_uview && npm run format *)",
+      "Bash(cd uni_backend_uview && npm run test *)",
+      "Bash(nest start:dev *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git reset --hard *)"
+    ]
+  }
+}
