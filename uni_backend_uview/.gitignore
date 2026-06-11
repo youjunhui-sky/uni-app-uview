@@ -26,6 +26,9 @@ coverage/
 .env.local
 .env.*.local
 
+# SMS config (contains secrets)
+src/config/sms.config.ts
+
 # Temporary
 *.bak
 *.tmp

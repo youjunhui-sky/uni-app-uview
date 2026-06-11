@@ -11,6 +11,7 @@ import { EtiologyModule } from './modules/etiology/etiology.module';
 import { DictModule } from './modules/dict/dict.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { BaseModule } from './modules/base/base.module';
+import { SmsModule } from './common/sms/sms.module';
 
 @Module({
   imports: [
@@ -43,6 +44,9 @@ import { BaseModule } from './modules/base/base.module';
     DictModule,
     UploadModule,
     BaseModule,
+
+    // 公共模块
+    SmsModule,
   ],
 })
 export class AppModule {}

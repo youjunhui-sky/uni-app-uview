@@ -8,6 +8,7 @@ import { UserInfoEntity } from '../../entities/user-info.entity';
 import { PatientUserEntity } from '../../entities/patient-user.entity';
 import { PatientInfoEntity } from '../../entities/patient-info.entity';
 import { CoolCommException } from '../../common/exceptions';
+import { SmsService } from '../../common/sms/sms.service';
 
 // 简单的内存缓存实现（与8081的midwayCache行为一致）
 interface CacheEntry {
@@ -30,6 +31,7 @@ function cleanExpiredCache(cache: Map<string, CacheEntry>) {
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
+    private readonly smsService: SmsService,
     @InjectRepository(UserInfoEntity)
     private readonly userInfoEntity: Repository<UserInfoEntity>,
     @InjectRepository(PatientUserEntity)
@@ -127,20 +129,23 @@ export class AuthService {
       throw new CoolCommException('图片验证码错误');
     }
 
-    // 2、发送短信验证码（随机4位）
-    //const smsCode = Math.floor(1000 + Math.random() * 9000).toString();
-    const smsCode = '1234';
-    // TODO: 实际发送短信的逻辑，这里先模拟
-    console.log(`发送短信验证码到 ${phone}，验证码：${smsCode}`);
+    // 2、生成短信验证码（随机4位）
+    const smsCode = Math.floor(1000 + Math.random() * 9000).toString();
 
-    // 3、缓存短信验证码（5分钟过期）
+    // 3、通过阿里云短信服务发送验证码
+    const result = await this.smsService.sendSmsCode(phone, smsCode);
+    if (!result.success) {
+      throw new CoolCommException(result.message || '短信发送失败，请稍后重试');
+    }
+
+    // 4、缓存短信验证码（5分钟过期）
     cleanExpiredCache(smsCache);
     smsCache.set(`sms:${phone}`, {
       value: smsCode,
       expireTime: Date.now() + 5 * 60 * 1000,
     });
 
-    return { success: true };
+    return { success: true, bizId: result.bizId };
   }
 
   /**
