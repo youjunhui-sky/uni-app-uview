@@ -1,6 +1,5 @@
 export * from "./useRouter";
 export * from "./useStorage";
-export * from "./useRequest";
 export * from "./useService";
 export * from "./useRefs";
 export * from "./usePager";

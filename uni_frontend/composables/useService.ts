@@ -1,4 +1,4 @@
-import { isDev } from "@/config";
+import { logger } from "@/utils/logger";
 
 // 全局 token 存储
 let globalToken = "";
@@ -27,13 +27,10 @@ function createRequest() {
 			}
 		});
 
-		if (isDev) {
-			console.log(`[${options.method || "GET"}] ${options.url}`, "Authorization:", Authorization ? "有" : "无");
-		}
+		logger.log(`[${options.method || "GET"}] ${options.url}`);
 
 		return new Promise(async (resolve, reject) => {
 			function next() {
-				console.log("实际请求:", options.url, "Authorization:", Authorization ? "有" : "无");
 				uni.request({
 					...options,
 					header: {
@@ -42,7 +39,7 @@ function createRequest() {
 						...options.header,
 					},
 					success(res: any) {
-						console.log("响应:", res.statusCode, res.data);
+						logger.log(`[响应] ${options.url} status=${res.statusCode}`);
 						const { code, data, message } = res.data as any;
 
 						if (res.statusCode === 401) {
@@ -70,7 +67,7 @@ function createRequest() {
 						}
 					},
 					fail(err: any) {
-						console.error("请求失败:", err);
+						logger.error(`请求失败: ${options.url}`, err);
 						reject({ message: err.errMsg });
 					},
 				});

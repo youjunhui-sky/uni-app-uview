@@ -22,10 +22,10 @@
 - [ ] 为核心 API 层（useService.ts）和 store 定义 interface
 
 ### 6. useRequest.ts 和 useService.ts 重复
-- [ ] 合并 HTTP 请求逻辑，删除重复代码
+- [x] ~~合并 HTTP 请求逻辑，删除重复代码~~ **已删除 useRequest.ts（无引用），合并入口**
 
 ### 7. 生产环境 console.log 过多
-- [ ] 封装 logger 工具，生产环境关闭调试日志
+- [x] ~~封装 logger 工具，生产环境关闭调试日志~~ **已创建 utils/logger.ts，useService.ts 已替换**
 
 ### 8. 患者页面新旧版本并存
 - [ ] 删除旧版本 addPatient.vue、mgnPatient.vue
