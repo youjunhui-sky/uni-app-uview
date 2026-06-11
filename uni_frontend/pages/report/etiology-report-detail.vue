@@ -77,6 +77,7 @@
 </template>
 
 <script lang="ts" setup>
+import { logger } from "@/utils/logger";
 import { ref, onMounted } from "vue";
 import { service } from "@/composables/useService";
 import { useRouter } from "@/composables/useRouter";
@@ -156,7 +157,7 @@ async function loadDetail() {
 			detail.value.aiGuideSuggestion = res.aiGuideSuggestion || '暂无防治建议';
 		}
 	} catch (error: any) {
-		console.error("加载详情失败:", error);
+		logger.error("加载详情失败:", error);
 		uni.showToast({ title: error.message || "加载失败", icon: "none" });
 	} finally {
 		loading.value = false;

@@ -76,6 +76,7 @@
 </template>
 
 <script lang="ts" setup>
+import { logger } from "@/utils/logger";
 import { ref, reactive, onMounted } from 'vue';
 import { useDictStore } from "@/stores/dict";
 import { useUserStore } from "@/stores/user";
@@ -118,13 +119,13 @@ const errors = reactive<{ [key: string]: string }>({
 const occupationOptions = ref<Array<{ value: string; label: string }>>([]);
 
 onMounted(async () => {
-	console.log('页面已加载，开始初始化数据');
+	logger.log('页面已加载，开始初始化数据');
 
 	const userStore = useUserStore();
 	const userInfo = userStore.info;
 
 	if (!userInfo || Object.keys(userInfo).length === 0) {
-		console.log('用户未登录，跳转到登录页面');
+		logger.log('用户未登录，跳转到登录页面');
 		uni.showToast({
 			title: '请先登录',
 			icon: 'none',
@@ -143,7 +144,7 @@ onMounted(async () => {
 	await service.patient.patientUser.getByUserId({
 		userId: userInfo.id
 	}).then(res => {
-		console.log('获取患者数据成功:', res);
+		logger.log('获取患者数据成功:', res);
 
 		if (Array.isArray(res) && res.length > 0) {
 			patients.value = res.map((p: any) => ({
@@ -158,7 +159,7 @@ onMounted(async () => {
 			patients.value = [];
 		}
 	}).catch(error => {
-		console.error('获取患者数据失败:', error);
+		logger.error('获取患者数据失败:', error);
 		uni.showToast({
 			title: '获取数据失败',
 			icon: 'none',
@@ -167,7 +168,7 @@ onMounted(async () => {
 	});
 
 	await loadOccupationOptions();
-	console.log('初始化完成');
+	logger.log('初始化完成');
 });
 
 async function loadOccupationOptions() {
@@ -202,7 +203,7 @@ async function loadOccupationOptions() {
 			occupationOptions.value = [];
 		}
 	} catch (error) {
-		console.error('获取职业字典失败:', error);
+		logger.error('获取职业字典失败:', error);
 		occupationOptions.value = [];
 	}
 }
@@ -280,17 +281,17 @@ async function queryPatientByIDCard(idCard: string, name: string) {
 			idCard: idCard,
 			name: name
 		}).then((res) => {
-			console.log('查询患者信息响应:', res);
+			logger.log('查询患者信息响应:', res);
 
 			if (Array.isArray(res) && res.length > 0) {
 				formData.patientNo = res[0].patientNo;
 				formData.occupation = res[0].occupation;
 				formData.mobile = res[0].mobile;
 			}
-			console.log('查询患者信息响应:', formData);
+			logger.log('查询患者信息响应:', formData);
 		});
 	} catch (error) {
-		console.error('查询患者信息失败:', error);
+		logger.error('查询患者信息失败:', error);
 	}
 }
 
@@ -314,7 +315,7 @@ async function submit() {
 
 	loading.value = true;
 
-	console.log('提交的患者数据:', formData);
+	logger.log('提交的患者数据:', formData);
 	const userStore = useUserStore();
 
 	const userInfo = userStore.info;
@@ -335,18 +336,18 @@ async function submit() {
 		occupation: formData.occupation,
 		default: formData.default
 	}).then((res: any) => {
-		console.log('绑定患者成功:', res);
+		logger.log('绑定患者成功:', res);
 		uni.showToast({ title: '绑定成功', icon: 'success' });
 
 		setTimeout(() => {
 			uni.navigateBack();
 		}, 1500);
 	}).catch((error: any) => {
-		console.error('绑定患者失败:', error);
+		logger.error('绑定患者失败:', error);
 		uni.showToast({ title: error.message || '绑定失败，请重试', icon: 'none' });
 	});
 	loading.value = false;
-	console.log('提交完成' + loading.value);
+	logger.log('提交完成' + loading.value);
 }
 
 function validateForm() {

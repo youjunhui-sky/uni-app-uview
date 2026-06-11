@@ -1,3 +1,4 @@
+import { logger } from "@/utils/logger";
 import { last } from "lodash-es";
 import { storage } from "./useStorage";
 
@@ -232,7 +233,7 @@ export function useRouter() {
 				mode: "switchTab",
 			});
 		} else {
-			console.error("Not found tab", name);
+			logger.error("Not found tab", name);
 		}
 	}
 

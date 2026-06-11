@@ -1,3 +1,4 @@
+import { logger } from "@/utils/logger";
 import { orderBy } from "lodash-es";
 
 export const { platform } = uni.getSystemInfoSync();
@@ -235,7 +236,7 @@ export async function getHospitalName(): Promise<string> {
 
 		return hospitalNameCache || "";
 	} catch (error: any) {
-		console.error("获取医院名称失败:", error);
+		logger.error("获取医院名称失败:", error);
 		return "";
 	}
 }

@@ -1,3 +1,4 @@
+import { logger } from "@/utils/logger";
 import { computed, getCurrentInstance, onUnmounted, reactive } from "vue";
 import { onPullDownRefresh, onReachBottom, onUnload } from "@dcloudio/uni-app";
 import { useUi } from "./useUi";
@@ -47,7 +48,7 @@ export function usePager<T = any>(data: T[] = []) {
 		} else if (proxy.$.exposed.refresh) {
 			await proxy.$.exposed.refresh(params);
 		} else {
-			console.log("use defineExpose({ refresh })");
+			logger.log("use defineExpose({ refresh })");
 		}
 	}
 

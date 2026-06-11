@@ -54,6 +54,7 @@
 </template>
 
 <script lang="ts" setup>
+import { logger } from "@/utils/logger";
 import { onReady } from "@dcloudio/uni-app";
 import { ref } from "vue";
 import { usePager } from "@/composables/usePager";
@@ -111,11 +112,11 @@ function toggleItemDetail(item: { id: number; }) {
 }
 
 function viewPreoperativeRecord(patient: any) {
-	console.log("viewPreoperativeRecord", patient);
+	logger.log("viewPreoperativeRecord", patient);
 }
 
 function viewTreatmentRecord(patient: any) {
-	console.log("viewTreatmentRecord", patient);
+	logger.log("viewTreatmentRecord", patient);
 }
 
 defineExpose({

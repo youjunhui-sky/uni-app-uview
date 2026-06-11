@@ -108,6 +108,7 @@
 </template>
 
 <script lang="ts" setup>
+import { logger } from "@/utils/logger";
 import { reactive, ref, onMounted } from "vue";
 import { useUi } from "@/composables/useUi";
 import { useUserStore } from "@/stores/user";
@@ -167,9 +168,9 @@ onShow(() => {
 onMounted(async () => {
 	await getPatient();
 
-	console.log("maxPatientCount.value = " + maxPatientCount.value);
-	console.log("patients = " + patients.value);
-	console.log("patients.length = " + patients.value.length);
+	logger.log("maxPatientCount.value = " + maxPatientCount.value);
+	logger.log("patients = " + patients.value);
+	logger.log("patients.length = " + patients.value.length);
 	if (patients.value.length >= maxPatientCount.value) {
 		showError("最多只能绑定" + maxPatientCount.value + "个就诊者");
 		const pages = getCurrentPages();
@@ -194,7 +195,7 @@ async function getPatient() {
 			userId: userInfo.id,
 		});
 
-		console.log("获取患者数据成功:", res);
+		logger.log("获取患者数据成功:", res);
 
 		if (Array.isArray(res) && res.length > 0) {
 			patients.value = res.map((p: any) => ({
@@ -211,7 +212,7 @@ async function getPatient() {
 			patients.value = [];
 		}
 	} catch (error) {
-		console.error("获取患者数据失败:", error);
+		logger.error("获取患者数据失败:", error);
 		uni.showToast({
 			title: "获取数据失败",
 			icon: "none",
@@ -227,7 +228,7 @@ async function loadDutyOptions() {
 		// 给响应式一点传播时间
 		await new Promise(resolve => setTimeout(resolve, 100));
 		const dutyData = dictStore.get("duty");
-		console.log("[addPatient] 职业字典原始数据:", JSON.stringify(dutyData));
+		logger.log("[addPatient] 职业字典原始数据:", JSON.stringify(dutyData));
 
 		if (dutyData && Array.isArray(dutyData) && dutyData.length > 0) {
 			const opts = JSON.parse(JSON.stringify(dutyData))
@@ -239,7 +240,7 @@ async function loadDutyOptions() {
 				})
 				.filter((opt: any) => opt.value && opt.label);
 
-			console.log("[addPatient] 处理后职业选项:", JSON.stringify(opts));
+			logger.log("[addPatient] 处理后职业选项:", JSON.stringify(opts));
 
 			opts.unshift({ value: '', label: '请选择' });
 			dutyOptions.value = opts;
@@ -247,7 +248,7 @@ async function loadDutyOptions() {
 			dutyOptions.value = [{ value: '', label: '请选择' }];
 		}
 	} catch (error) {
-		console.error('获取职业字典失败:', error);
+		logger.error('获取职业字典失败:', error);
 		dutyOptions.value = [{ value: '', label: '请选择' }];
 	}
 }
@@ -294,11 +295,11 @@ async function validateMobile() {
 }
 
 function syncPatient() {
-	console.log("form = " + form);
+	logger.log("form = " + form);
 	if (!form.idCard || !form.name) {
 		return;
 	}
-	console.log("patients = " + patients);
+	logger.log("patients = " + patients);
 	if (checkPatientExists(form.idCard, form.name)) {
 		showError("就诊者已存在");
 		return;
@@ -317,17 +318,17 @@ async function queryPatientByIDCard(idCard: string, name: string) {
 				name: name,
 			})
 			.then((res) => {
-				console.log("查询患者信息响应:", res);
+				logger.log("查询患者信息响应:", res);
 				if (Array.isArray(res) && res.length > 0) {
 					form.patientNo = res[0].patientNo || "";
 					form.occupation = res[0].occupation || "";
 					form.mobile = res[0].mobile || "";
 					form.patientId = res[0].id || 0;
 				}
-				console.log("查询患者信息响应:", form);
+				logger.log("查询患者信息响应:", form);
 			});
 	} catch (error: any) {
-		console.error("查询患者信息失败:", error);
+		logger.error("查询患者信息失败:", error);
 		showError(error?.message || "查询患者信息失败");
 	}
 }
@@ -342,7 +343,7 @@ async function submit() {
 	await validateMobile();
 
 	if(errors.mobile != '' || errors.idCard != '' || errors.name != '') {
-		console.log("存在错误信息" + errors.mobile + "  " + errors.idCard + "  " + errors.name);
+		logger.log("存在错误信息" + errors.mobile + "  " + errors.idCard + "  " + errors.name);
 		errors.mobile = "";
 		errors.idCard = "";
 		errors.name = "";
@@ -397,10 +398,10 @@ async function submit() {
 }
 
 function validateCertNo(idCard: string) {
-	console.log(idCard);
+	logger.log(idCard);
 	const reg = /^[1-9]\d{5}(19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{3}[\dXx]$/;
 	if (!reg.test(idCard)) {
-		console.log("身份证号码格式不合法");
+		logger.log("身份证号码格式不合法");
 		return false;
 	}
 
@@ -410,7 +411,7 @@ function validateCertNo(idCard: string) {
 	];
 	const provinceCode = idCard.substring(0, 2);
 	if (!provinceCodes.includes(provinceCode)) {
-		console.log("地址码校验不合法");
+		logger.log("地址码校验不合法");
 		return false;
 	}
 
@@ -424,7 +425,7 @@ function validateCertNo(idCard: string) {
 		birthDate.getMonth() !== month ||
 		birthDate.getDate() !== day
 	) {
-		console.log("出生日期校验不合法");
+		logger.log("出生日期校验不合法");
 		return false;
 	}
 

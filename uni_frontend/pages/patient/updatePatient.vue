@@ -64,6 +64,7 @@
 </template>
 
 <script lang="ts" setup>
+import { logger } from "@/utils/logger";
 import { reactive, ref, computed, onMounted } from "vue";
 import { useUi } from "@/composables/useUi";
 import { useUserStore } from "@/stores/user";
@@ -118,17 +119,17 @@ onMounted(() => {
 	const params = router.getParams() as any;
 	const patientNo = String(params?.patientNo || q?.patientNo || "");
 	patientId.value = params?.patientId || q?.patientId || 0;
-	console.log("patientId", patientId.value);
-	console.log("patientNo", patientNo);
-	console.log("query", q);
-	console.log("params", params);
+	logger.log("patientId", patientId.value);
+	logger.log("patientNo", patientNo);
+	logger.log("query", q);
+	logger.log("params", params);
 	service.patient.patientUser
 		.getByUserIdAndPatientNo({
 			userId: userStore.info?.id,
 			patientNo: patientNo,
 		})
 		.then((res) => {
-			console.log("res", res);
+			logger.log("res", res);
 			const list = Array.isArray(res) ? res : [];
 			if (list.length == 1) {
 				form.patientNo = list[0].patientNo || "";
@@ -139,9 +140,9 @@ onMounted(() => {
 				form.birthDate = list[0].birthDate || "";
 				form.gender = list[0].gender || "";
 			} else {
-				console.log("异常数据！");
+				logger.log("异常数据！");
 			}
-			console.log("form.duty", form.duty);
+			logger.log("form.duty", form.duty);
 		});
 });
 
@@ -157,12 +158,12 @@ async function loadDutyOptions() {
 		opts.unshift({ value: "", label: "" });
 		dutyOptions.value = opts;
 
-		console.log("加载完成职业", dutyOptions.value);
+		logger.log("加载完成职业", dutyOptions.value);
 	}
 }
 
 async function submit() {
-	console.log("patientId", patientId.value);
+	logger.log("patientId", patientId.value);
 	await service.patient.patientInfo
 		.update({
 			id: patientId.value,
@@ -178,7 +179,7 @@ async function submit() {
 			}
 		})
 		.catch((e: any) => {
-			console.log("e", e);
+			logger.log("e", e);
 			showError(e?.message || "提交失败，请重试");
 		});
 }

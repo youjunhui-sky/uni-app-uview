@@ -99,6 +99,7 @@
 </template>
 
 <script lang="ts" setup>
+import { logger } from "@/utils/logger";
 import { onReady } from "@dcloudio/uni-app";
 import { ref, watch } from "vue";
 import { usePager } from "@/composables/usePager";
@@ -146,7 +147,7 @@ function refresh1() {
 			patient.value = res;
 			hasRefreshed.value = true;
 		}).catch(error => {
-			console.error("Failed to fetch patient details:", error);
+			logger.error("Failed to fetch patient details:", error);
 		}).finally(() => {
 			isRefreshing.value = false;
 			isLoading.value = false;

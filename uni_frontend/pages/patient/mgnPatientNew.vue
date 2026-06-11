@@ -56,6 +56,7 @@
 </template>
 
 <script lang="ts" setup>
+import { logger } from "@/utils/logger";
 import { ref, onMounted } from "vue";
 import { service } from "@/composables/useService";
 import { useRouter } from "@/composables/useRouter";
@@ -95,7 +96,7 @@ async function loadPatients() {
 	}
 	try {
 		const res = await service.patient.patientUser.getByUserId({ userId: userInfo.id });
-		console.log("获取就诊人数据成功:", res);
+		logger.log("获取就诊人数据成功:", res);
 		const list = Array.isArray(res) ? res : [];
 		patients.value = list.map((p: any) => ({
 			id: String(p.id),
@@ -125,7 +126,7 @@ function goAdd() {
 }
 
 function edit(item: PatientItem) {
-	console.log("item", item);
+	logger.log("item", item);
 	router.push({
 		path: "/pages/patient/updatePatient",
 		params: { patientNo: item.patientNo, patientId: item.patientId },
@@ -138,7 +139,7 @@ function setCurrent(item: PatientItem) {
 		showTips("就诊人不存在");
 		return;
 	}
-	console.log("设置当前就诊人:", {
+	logger.log("设置当前就诊人:", {
 		userId: userStore.info?.id,
 		patientUserId: currentPatient.patientNo,
 	});
@@ -148,7 +149,7 @@ function setCurrent(item: PatientItem) {
 			patientUserId: currentPatient.patientNo,
 		})
 		.then((res: any) => {
-			console.log("updateDefault response:", res);
+			logger.log("updateDefault response:", res);
 			showTips("已设为当前就诊人");
 			// 更新当前就诊人ID
 			currentId.value = item.id;
@@ -156,7 +157,7 @@ function setCurrent(item: PatientItem) {
 			loadPatients();
 		})
 		.catch((err: any) => {
-			console.error("设置当前就诊人失败:", err);
+			logger.error("设置当前就诊人失败:", err);
 			showTips("设置失败");
 		});
 }
@@ -177,13 +178,13 @@ function remove(item: PatientItem) {
 					showTips("删除成功");
 					await loadPatients();
 
-					console.log("def = " + currentId);
+					logger.log("def = " + currentId);
 					if(currentId.value != null && currentId.value != ''){
 
 					}else{
 						const noDefPatient = patients.value[0];
 						if(noDefPatient != null && noDefPatient.id != ''){
-							console.log("noDefPatient = " + noDefPatient.name);
+							logger.log("noDefPatient = " + noDefPatient.name);
 							service.patient.patientUser
 								.updateDefault({
 									userId: userStore.info?.id,

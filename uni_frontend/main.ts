@@ -1,3 +1,4 @@
+import { logger } from "@/utils/logger";
 import { createSSRApp } from "vue";
 import { createPinia } from "pinia";
 import App from "./App.vue";
@@ -19,8 +20,8 @@ setConfig({
 // 在应用启动前设置错误过滤
 // #ifdef MP-WEIXIN
 if (typeof console !== "undefined") {
-	const originalError = console.error;
-	console.error = function (...args: any[]) {
+	const originalError = logger.error;
+	logger.error = function (...args: any[]) {
 		// 过滤微信小程序开发工具的内部错误
 		const errorStr = args.map((arg) => String(arg)).join(" ");
 		if (

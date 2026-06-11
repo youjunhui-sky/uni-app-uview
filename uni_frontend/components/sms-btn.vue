@@ -50,6 +50,7 @@
 </template>
 
 <script lang="ts" setup>
+import { logger } from "@/utils/logger";
 import { computed, type PropType, reactive, ref } from "vue";
 import { service } from "@/composables/useService";
 import { useUi } from "@/composables/useUi";
@@ -150,12 +151,12 @@ async function getCaptcha() {
 	await service.user.login
 		.captcha({ color: "#2c3142", phone: props.phone })
 		.then((res: any) => {
-			console.log("验证码响应:", res);
-			console.log("设置 img,长度:", res.data?.length);
+			logger.log("验证码响应:", res);
+			logger.log("设置 img,长度:", res.data?.length);
 			form.captchaId = res.captchaId;
 			captcha.img = res.data;
-			console.log("captcha.img 设置后:", captcha.img?.substring(0, 100));
-			console.log("captcha.visible:", captcha.visible);
+			logger.log("captcha.img 设置后:", captcha.img?.substring(0, 100));
+			logger.log("captcha.visible:", captcha.visible);
 		})
 		.catch((err) => {
 			ui.showToast(err.message);

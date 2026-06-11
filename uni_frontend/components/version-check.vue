@@ -14,6 +14,7 @@
 </template>
 
 <script lang="ts" setup>
+import { logger } from "@/utils/logger";
 import { ref, onMounted } from "vue";
 import { onShow } from "@dcloudio/uni-app";
 
@@ -55,17 +56,17 @@ async function checkVersion() {
 		// 获取本地存储的版本
 		const localVersion = uni.getStorageSync("app_version") || "";
 
-		console.log("newVersion", newVersion);
-		console.log("localVersion", localVersion);
+		logger.log("newVersion", newVersion);
+		logger.log("localVersion", localVersion);
 
-		console.log("newVersion !== localVersion", newVersion !== localVersion);
+		logger.log("newVersion !== localVersion", newVersion !== localVersion);
 
 		// 如果是第一次访问或者版本不同，则更新本地存储的版本
 		if (newVersion && newVersion !== localVersion) {
 			// 如果本地没有版本信息，说明是第一次访问，直接保存版本
 			if (!localVersion) {
 				uni.setStorageSync("app_version", newVersion);
-				console.log("首次访问，保存版本:", newVersion);
+				logger.log("首次访问，保存版本:", newVersion);
 			} else {
 				// 版本不同，显示更新提示
 				currentVersion.value = newVersion;
@@ -73,7 +74,7 @@ async function checkVersion() {
 			}
 		}
 	} catch (error) {
-		console.log("版本检查失败:", error);
+		logger.log("版本检查失败:", error);
 	}
 }
 
@@ -84,7 +85,7 @@ function refreshPage() {
 	// 保存新版本到本地存储
 	if (currentVersion.value) {
 		uni.setStorageSync("app_version", currentVersion.value);
-		console.log("保存新版本到本地:", currentVersion.value);
+		logger.log("保存新版本到本地:", currentVersion.value);
 	}
 
 	// 清理其他缓存（保留版本信息）

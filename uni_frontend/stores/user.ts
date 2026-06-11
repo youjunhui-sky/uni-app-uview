@@ -1,3 +1,4 @@
+import { logger } from "@/utils/logger";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { service, setGlobalToken } from "@/composables/useService";
@@ -19,10 +20,10 @@ const useUserStore = defineStore("user", function () {
 
 	// 设置标识
 	function setToken(data: { token: string; expire: number; refreshToken: string; refreshExpire: number }) {
-		console.log("setToken called with:", data.token ? "valid token" : "EMPTY TOKEN!");
+		logger.log("setToken called with:", data.token ? "valid token" : "EMPTY TOKEN!");
 		token.value = data.token;
 		setGlobalToken(data.token);
-		console.log("globalToken after setGlobalToken:", data.token);
+		logger.log("globalToken after setGlobalToken:", data.token);
 
 		// 访问
 		storage.set("token", data.token, data.expire - 5);

@@ -72,6 +72,7 @@
 </template>
 
 <script lang="ts" setup>
+import { logger } from "@/utils/logger";
 import { ref, computed, onMounted } from "vue";
 import { onShow } from "@dcloudio/uni-app";
 import { service } from "@/composables/useService";
@@ -108,10 +109,10 @@ async function loadPatientData() {
 	const userStore = useUserStore();
 	const userInfo = userStore.info;
 
-	console.log('userInfo:', userInfo);
+	logger.log('userInfo:', userInfo);
 
 	if (!userInfo || Object.keys(userInfo).length === 0) {
-		console.log('用户未登录，跳转到登录页面');
+		logger.log('用户未登录，跳转到登录页面');
 		uni.showToast({
 			title: '请先登录',
 			icon: 'none',
@@ -127,11 +128,11 @@ async function loadPatientData() {
 		return;
 	}
 
-	console.log('开始获取患者数据');
+	logger.log('开始获取患者数据');
 	await service.patient.patientUser.getByUserId({
 		userId: userInfo.id
 	}).then(res => {
-		console.log('获取患者数据成功:', res);
+		logger.log('获取患者数据成功:', res);
 
 		if (Array.isArray(res) && res.length > 0) {
 			patients.value = res.map((p: any) => ({
@@ -152,7 +153,7 @@ async function loadPatientData() {
 			patients.value = [];
 		}
 	}).catch(error => {
-		console.error('获取患者数据失败:', error);
+		logger.error('获取患者数据失败:', error);
 		uni.showToast({
 			title: '获取数据失败',
 			icon: 'none',

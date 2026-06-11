@@ -170,6 +170,7 @@
 </template>
 
 <script lang="ts" setup>
+import { logger } from "@/utils/logger";
 import { reactive, ref, computed, onMounted } from 'vue'
 import { service } from "@/composables/useService";
 import { useRouter } from "@/composables/useRouter";
@@ -339,7 +340,7 @@ async function checkExistingAnswer(): Promise<void> {
 			existingAnswerId.value = null
 		}
 	} catch (err) {
-		console.error("checkExistingAnswer error:", err)
+		logger.error("checkExistingAnswer error:", err)
 		existingAnswerId.value = null
 	}
 }

@@ -2,10 +2,10 @@ import { Controller, Post, Get, UseGuards, UseInterceptors, UploadedFile, BadReq
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { UploadService } from './upload.service';
+import { UPLOAD_DIR } from '../../common/paths';
 import { extname } from 'path';
 import { v4 as uuid } from 'uuid';
 import * as fs from 'fs';
-import * as path from 'path';
 import * as multer from 'multer';
 
 /** 允许的扩展名（小写），覆盖 getUploadMode 宣传的 MIME 类型 */
@@ -13,9 +13,6 @@ const ALLOWED_EXTS = ['.jpg', '.jpeg', '.png', '.gif', '.mp4'];
 
 /** 单文件大小上限 */
 const MAX_SIZE = 10 * 1024 * 1024;
-
-/** 本地存储根目录（commit 2 抽到 common/paths.ts） */
-const UPLOAD_DIR = path.resolve(process.cwd(), 'uploads');
 
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {

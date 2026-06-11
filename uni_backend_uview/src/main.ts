@@ -4,7 +4,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import * as path from 'path';
+import { UPLOAD_DIR, UPLOAD_PREFIX } from './common/paths';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -17,8 +17,8 @@ async function bootstrap() {
   });
 
   // 暴露 uploads 目录为静态资源
-  app.useStaticAssets(path.resolve(process.cwd(), 'uploads'), {
-    prefix: '/uploads/',
+  app.useStaticAssets(UPLOAD_DIR, {
+    prefix: UPLOAD_PREFIX + '/',
   });
 
   // 全局管道 - 参数验证

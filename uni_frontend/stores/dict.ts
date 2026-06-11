@@ -1,3 +1,4 @@
+import { logger } from "@/utils/logger";
 import { defineStore } from "pinia";
 import { computed, reactive, toRaw } from "vue";
 import { service } from "@/composables/useService";
@@ -59,8 +60,8 @@ const useDictStore = defineStore("dict", () => {
 				Object.assign(data, d);
 
 				if (isDev) {
-					console.log("字典数据：");
-					console.log(toRaw(data));
+					logger.log("字典数据：");
+					logger.log(toRaw(data));
 				}
 
 				return data;

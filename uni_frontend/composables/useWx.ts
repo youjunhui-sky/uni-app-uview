@@ -1,3 +1,4 @@
+import { logger } from "@/utils/logger";
 import { ref } from "vue";
 import { onReady, onShow } from "@dcloudio/uni-app";
 import { service } from "./useService";
@@ -157,7 +158,7 @@ export function useWx() {
 					});
 				},
 				fail(err: any) {
-					console.error(err);
+					logger.error(err);
 					getCode().then(() => {
 						reject({
 							message: t("登录授权失败"),

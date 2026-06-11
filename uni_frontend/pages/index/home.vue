@@ -44,6 +44,7 @@
 </template>
 
 <script lang="ts" setup>
+import { logger } from "@/utils/logger";
 import { onMounted, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import Tabbar from "./components/tabbar.vue";
@@ -88,7 +89,7 @@ onMounted(async () => {
 
 function checkLogin() {
 	const userInfo = userStore.info;
-	console.log("检查登录状态 - userInfo:", userInfo);
+	logger.log("检查登录状态 - userInfo:", userInfo);
 	if (userInfo === null || userInfo === undefined) {
 		isLogin.value = false;
 		return;
@@ -126,7 +127,7 @@ async function changePatient() {
 	}
 	if (patients.value.length === 1) {
 		visible.value = false;
-		console.log("只有一个就诊人，无需选择");
+		logger.log("只有一个就诊人，无需选择");
 		return;
 	}
 	visible.value = !visible.value;
@@ -135,14 +136,14 @@ async function changePatient() {
 async function loadPatientData() {
 	const userStore = useUserStore();
 	const userInfo = userStore.info;
-	console.log("开始获取患者数据");
+	logger.log("开始获取患者数据");
 	await service.patient.patientUser
 		.getByUserId({
 			userId: userInfo?.id || "",
 		})
 		.then((res) => {
 			if (Array.isArray(res) && res.length > 0) {
-				console.log("患者数据:", res);
+				logger.log("患者数据:", res);
 				patients.value = res.map((p: any) => ({
 					id: String(p.id),
 					name: p.name || "未知",
@@ -163,7 +164,7 @@ async function loadPatientData() {
 			}
 		})
 		.catch((error) => {
-			console.error("获取患者数据失败:", error);
+			logger.error("获取患者数据失败:", error);
 		});
 }
 

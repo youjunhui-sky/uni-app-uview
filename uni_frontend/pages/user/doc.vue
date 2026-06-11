@@ -5,6 +5,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from "@/utils/logger";
 import { onReady } from "@dcloudio/uni-app";
 import { ref } from "vue";
 import { useRouter } from "@/composables/useRouter";
@@ -17,15 +18,15 @@ const content = ref("");
 onReady(() => {
 	const { title, key } = router.getQuery();
 
-	console.log("doc page query:", router.getQuery());
-	console.log("key:", key);
+	logger.log("doc page query:", router.getQuery());
+	logger.log("key:", key);
 
 	uni.setNavigationBarTitle({
 		title,
 	});
 
 	if (!key) {
-		console.error("key is empty!");
+		logger.error("key is empty!");
 		return;
 	}
 
@@ -34,13 +35,13 @@ onReady(() => {
 			key,
 		})
 		.then((res: any) => {
-			console.log("comm.param response:", res);
+			logger.log("comm.param response:", res);
 			// API 直接返回 { content: "..." } 结构
 			content.value = res?.content || "";
-			console.log("content set to:", content.value?.substring?.(0, 100));
+			logger.log("content set to:", content.value?.substring?.(0, 100));
 		})
 		.catch((err: any) => {
-			console.error("comm.param error:", err);
+			logger.error("comm.param error:", err);
 		});
 });
 </script>

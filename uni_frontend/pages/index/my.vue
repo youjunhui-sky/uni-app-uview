@@ -190,6 +190,7 @@
 </template>
 
 <script lang="ts" setup>
+import { logger } from "@/utils/logger";
 import { onPullDownRefresh, onShow } from "@dcloudio/uni-app";
 import { service } from "@/composables/useService";
 import { storage } from "@/composables/useStorage";
@@ -229,7 +230,7 @@ async function refresh() {
 	}
 
 	let currentPatientStorage = storage.get("currentPatient");
-	console.log("currentPatientStorage" + currentPatientStorage);
+	logger.log("currentPatientStorage" + currentPatientStorage);
 
 	if (currentPatientStorage && typeof currentPatientStorage === 'object' && !Array.isArray(currentPatientStorage) && Object.keys(currentPatientStorage).length > 0) {
 		second_flag.value = true;
@@ -252,25 +253,25 @@ async function refresh() {
 	if (second_flag.value && patientCard.visitNo) {
 		try {
 			const visitNoStr = String(patientCard.visitNo);
-			console.log("开始生成二维码，内容:", visitNoStr, "长度:", visitNoStr.length);
+			logger.log("开始生成二维码，内容:", visitNoStr, "长度:", visitNoStr.length);
 
 			if (visitNoStr.length > 2000) {
-				console.warn("档案号过长，截取前2000个字符");
+				logger.warn("档案号过长，截取前2000个字符");
 				const qrCode = await generateQRCode(visitNoStr);
 				qrCodeImage.value = qrCode;
 			} else {
 				const qrCode = await generateQRCode(visitNoStr);
-				console.log("二维码生成成功，类型:", typeof qrCode, "长度:", qrCode?.length);
+				logger.log("二维码生成成功，类型:", typeof qrCode, "长度:", qrCode?.length);
 				if (qrCode && qrCode.length > 0) {
 					qrCodeImage.value = qrCode;
 				} else {
-					console.warn("二维码数据为空");
+					logger.warn("二维码数据为空");
 					qrCodeImage.value = "";
 				}
 			}
 		} catch (error: any) {
-			console.error("生成二维码失败:", error);
-			console.error("错误详情:", error.message);
+			logger.error("生成二维码失败:", error);
+			logger.error("错误详情:", error.message);
 			qrCodeImage.value = "";
 		}
 	} else {
@@ -284,7 +285,7 @@ function maskIdCard(val?: string) {
 }
 
 function handleQRCodeError(e: any) {
-	console.error("二维码图片加载失败:", e);
+	logger.error("二维码图片加载失败:", e);
 	qrCodeImage.value = "";
 }
 

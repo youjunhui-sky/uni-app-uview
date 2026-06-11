@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-
-/** URL 访问前缀（commit 2 抽到 common/paths.ts） */
-const URL_PREFIX = '/uploads';
+import { UPLOAD_PREFIX } from '../../common/paths';
 
 @Injectable()
 export class UploadService {
@@ -23,7 +21,7 @@ export class UploadService {
    */
   async upload(file: Express.Multer.File): Promise<{ url: string; name: string; size: number }> {
     return {
-      url: `${URL_PREFIX}/${file.filename}`,
+      url: `${UPLOAD_PREFIX}/${file.filename}`,
       name: file.filename,
       size: file.size,
     };

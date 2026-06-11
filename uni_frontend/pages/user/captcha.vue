@@ -40,6 +40,7 @@
 </template>
 
 <script lang="ts" setup>
+import { logger } from "@/utils/logger";
 import { onReady } from "@dcloudio/uni-app";
 import { reactive, ref } from "vue";
 import { storage } from "@/composables/useStorage";
@@ -83,7 +84,7 @@ function next() {
 			if (res.userInfo) {
 				userStore.set(res.userInfo);
 			} else {
-				console.log("响应中没有userInfo，尝试获取用户信息");
+				logger.log("响应中没有userInfo，尝试获取用户信息");
 				// 如果响应中没有用户信息，主动获取
 				await userStore.get();
 			}

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { logger } from "@/utils/logger";
 import { useUserStore } from "@/stores/user";
 import { useDictStore } from "@/stores/dict";
 import { onLaunch, onShow, onHide, onError } from "@dcloudio/uni-app";
@@ -17,11 +18,11 @@ onError((error: any) => {
 		return;
 	}
 
-	console.error("全局错误捕获:", error);
+	logger.error("全局错误捕获:", error);
 });
 
 onLaunch(() => {
-	console.log("App Launch");
+	logger.log("App Launch");
 
 	// 处理未捕获的 Promise rejection
 	// #ifdef MP-WEIXIN
@@ -41,7 +42,7 @@ onLaunch(() => {
 			) {
 				return;
 			}
-			console.error("未处理的 Promise rejection:", res);
+			logger.error("未处理的 Promise rejection:", res);
 		});
 	}
 	// #endif
@@ -59,11 +60,11 @@ onLaunch(() => {
 });
 
 onShow(() => {
-	console.log("App Show");
+	logger.log("App Show");
 });
 
 onHide(() => {
-	console.log("App Hide");
+	logger.log("App Hide");
 });
 </script>
 

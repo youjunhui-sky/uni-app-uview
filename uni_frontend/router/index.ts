@@ -1,3 +1,4 @@
+import { logger } from "@/utils/logger";
 import { useRouter } from "@/composables/useRouter";
 import { useUserStore } from "@/stores/user";
 import { service } from "@/composables/useService";
@@ -45,9 +46,9 @@ uni.addInterceptor("navigateTo", {
 					service.patient.patientUser
 						.getCurrentPatient({ userId: userStore.info?.id })
 						.then((res) => {
-							console.log("查询患者信息响应:", res);
+							logger.log("查询患者信息响应:", res);
 							if (!res || typeof res !== "object" || Array.isArray(res) || Object.keys(res).length === 0) {
-								console.log("-----------------");
+								logger.log("-----------------");
 								ui.showToast("需要添加就诊人,才能为您提供服务");
 								setTimeout(() => {
 									router.push({
@@ -60,7 +61,7 @@ uni.addInterceptor("navigateTo", {
 							router.push(args.url);
 						})
 						.catch((err) => {
-							console.log(err);
+							logger.log(err);
 							router.push(args.url);
 						});
 					return;
@@ -73,6 +74,6 @@ uni.addInterceptor("navigateTo", {
 		}
 	},
 	fail(err) {
-		console.error("路由拦截失败:", err);
+		logger.error("路由拦截失败:", err);
 	},
 });

@@ -36,6 +36,7 @@
 </template>
 
 <script lang="ts" setup>
+import { logger } from "@/utils/logger";
 import { ref, onMounted } from "vue";
 import { service } from "@/composables/useService";
 import { useRouter } from "@/composables/useRouter";
@@ -112,7 +113,7 @@ async function loadReportList() {
 		const res = await service.etiology.muaInfo.getMuaInfoByPatientNo({
 			patientNo: currentPatient.patientNo,
 		});
-		console.log("res", res);
+		logger.log("res", res);
 		if (Array.isArray(res)) {
 			list.value = res;
 		} else if (res && typeof res === "object") {
@@ -121,7 +122,7 @@ async function loadReportList() {
 			list.value = [];
 		}
 	} catch (error: any) {
-		console.error("加载代谢评估报告失败:", error);
+		logger.error("加载代谢评估报告失败:", error);
 		uni.showToast({
 			title: error.message || "加载失败",
 			icon: "none",
