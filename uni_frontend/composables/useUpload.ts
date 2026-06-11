@@ -87,7 +87,8 @@ export async function upload(file: any, cb?: UploadCallback): Promise<string> {
 					if (isLocal) {
 						const { code, data, message } = JSON.parse(res.data);
 						if (code == 1000) {
-							resolve(data);
+							// 后端返回 { url, name, size }，取 url 字符串与 AWS/OSS 分支保持一致
+							resolve(data?.url ?? data);
 						} else {
 							reject(message);
 						}

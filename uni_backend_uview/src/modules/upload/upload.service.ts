@@ -1,22 +1,10 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import * as fs from 'fs';
-import * as path from 'path';
-import { v4 as uuid } from 'uuid';
+import { Injectable } from '@nestjs/common';
+
+/** URL 访问前缀（commit 2 抽到 common/paths.ts） */
+const URL_PREFIX = '/uploads';
 
 @Injectable()
 export class UploadService {
-  /** 本地存储根目录 */
-  private readonly uploadDir = path.resolve(process.cwd(), 'uploads');
-
-  /** URL 访问前缀（前端拼上 baseUrl 即可访问） */
-  private readonly urlPrefix = '/uploads';
-
-  constructor() {
-    if (!fs.existsSync(this.uploadDir)) {
-      fs.mkdirSync(this.uploadDir, { recursive: true });
-    }
-  }
-
   /**
    * 获取上传模式
    */
@@ -31,24 +19,12 @@ export class UploadService {
   }
 
   /**
-   * 上传文件到本地
-   * @param file multer 解析后的文件
+   * 由 multer.diskStorage 直接写入 uploads/ 后，file.filename 即上传后的文件名
    */
   async upload(file: Express.Multer.File): Promise<{ url: string; name: string; size: number }> {
-    if (!file) {
-      throw new BadRequestException('未收到文件');
-    }
-
-    const ext = path.extname(file.originalname) || '';
-    const fileName = `${uuid()}${ext}`;
-    const destPath = path.join(this.uploadDir, fileName);
-
-    // multer 默认会写到临时目录，这里移动到 uploads/
-    fs.renameSync(file.path, destPath);
-
     return {
-      url: `${this.urlPrefix}/${fileName}`,
-      name: fileName,
+      url: `${URL_PREFIX}/${file.filename}`,
+      name: file.filename,
       size: file.size,
     };
   }

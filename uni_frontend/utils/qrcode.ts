@@ -4,8 +4,10 @@ import UQRCode from "uqrcodejs";
  * 生成二维码（返回 base64 图片字符串）
  */
 export async function generateQRCode(text: string, width = 200, height = 200): Promise<string> {
+	let result!: Promise<string>;
+
 	// #ifdef H5
-	return new Promise((resolve, reject) => {
+	result = new Promise((resolve, reject) => {
 		try {
 			const size = Math.min(width, height);
 			const canvas = document.createElement("canvas");
@@ -24,32 +26,11 @@ export async function generateQRCode(text: string, width = 200, height = 200): P
 			});
 			qr.make();
 
-			// 手动渲染 QR 码矩阵到 canvas，避免 drawCanvas 回调时序问题
-			const moduleCount = (qr as any).moduleCount as number;
-			const modules = (qr as any).modules as Array<Array<{ isBlack: boolean }>>;
-			const moduleSize = size / moduleCount;
-
-			// 白色背景
-			ctx.fillStyle = "#FFFFFF";
-			ctx.fillRect(0, 0, size, size);
-
-			// 逐个模块绘制
-			ctx.fillStyle = "#000000";
-			for (let row = 0; row < moduleCount; row++) {
-				for (let col = 0; col < moduleCount; col++) {
-					if (modules[row]?.[col]?.isBlack) {
-						ctx.fillRect(
-							Math.floor(col * moduleSize),
-							Math.floor(row * moduleSize),
-							Math.ceil(moduleSize),
-							Math.ceil(moduleSize),
-						);
-					}
-				}
-			}
-
-			const dataUrl = canvas.toDataURL("image/png");
-			resolve(dataUrl);
+			// 走公开 API：uqrcodejs 自己负责背景填白和模块绘制，不依赖私有字段
+			qr.canvasContext = ctx;
+			qr.drawCanvas(() => {
+				resolve(canvas.toDataURL("image/png"));
+			});
 		} catch (e) {
 			reject(e);
 		}
@@ -58,7 +39,7 @@ export async function generateQRCode(text: string, width = 200, height = 200): P
 
 	// #ifndef H5
 	// 小程序环境：使用 uQRCode 本地生成二维码，避免患者信息泄露给第三方
-	return new Promise((resolve, reject) => {
+	result = new Promise((resolve, reject) => {
 		try {
 			const size = Math.min(width, height);
 			const qr = new UQRCode({
@@ -67,6 +48,31 @@ export async function generateQRCode(text: string, width = 200, height = 200): P
 			});
 			qr.make();
 
+			// #ifdef MP-WEIXIN
+			// 微信新版 type="2d" canvas：必须通过 SelectorQuery 取 node
+			// uni 类型定义的 fields() 签名跟小程序原生签名不一致，这里 cast 走原生 API
+			((uni as any).createSelectorQuery() as any)
+				.select("#qrcode-canvas")
+				.fields({ node: true, size: true })
+				.exec((res: any) => {
+					const canvas = res[0]?.node;
+					if (!canvas) {
+						reject(new Error("找不到 qrcode-canvas 节点"));
+						return;
+					}
+					const ctx = canvas.getContext("2d");
+					qr.canvasContext = ctx;
+					qr.drawCanvas(() => {
+						canvas.toTempFilePath({
+							success: (r: any) => resolve(r.tempFilePath),
+							fail: reject,
+						});
+					});
+				});
+			// #endif
+
+			// #ifndef MP-WEIXIN
+			// 旧版 canvas：使用 canvasId（其他小程序/APP 平台）
 			const ctx = uni.createCanvasContext("qrcode-canvas");
 			qr.canvasContext = ctx;
 			qr.drawCanvas(() => {
@@ -80,9 +86,12 @@ export async function generateQRCode(text: string, width = 200, height = 200): P
 					fail: reject,
 				});
 			});
+			// #endif
 		} catch (e) {
 			reject(e);
 		}
 	});
 	// #endif
+
+	return result;
 }
