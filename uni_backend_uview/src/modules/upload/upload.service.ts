@@ -1,5 +1,4 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
@@ -12,7 +11,7 @@ export class UploadService {
   /** URL 访问前缀（前端拼上 baseUrl 即可访问） */
   private readonly urlPrefix = '/uploads';
 
-  constructor(private readonly configService: ConfigService) {
+  constructor() {
     if (!fs.existsSync(this.uploadDir)) {
       fs.mkdirSync(this.uploadDir, { recursive: true });
     }
