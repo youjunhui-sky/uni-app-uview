@@ -55,6 +55,7 @@ coverage/
 
 # Claude
 .claude/
+memory/
 
 # Misc
 *.tgz
