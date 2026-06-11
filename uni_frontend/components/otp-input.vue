@@ -4,12 +4,12 @@
 			<input
 				v-for="(item, index) in length"
 				:key="index"
+				:id="'otp-input-' + index"
 				:class="['otp-input-item', { 'is-focus': focusIndex === index }]"
 				type="number"
 				:disabled="disabled"
 				:value="codeArray[index] || ''"
 				maxlength="1"
-				data-index="index"
 				@focus="onFocus(index)"
 				@blur="onBlur"
 				@input="onInput($event, index)"
@@ -57,24 +57,31 @@ const onBlur = () => {
 	focusIndex.value = -1;
 };
 
-// 使用 uni.createSelectorQuery 获取下一个输入框并聚焦
-const focusNextInput = (index: number) => {
+// 聚焦指定索引的输入框
+const focusInput = (index: number) => {
+	// #ifdef H5
+	// H5 环境：通过 id 找到元素，确保光标进入真正的 input
+	nextTick(() => {
+		const el = document.getElementById("otp-input-" + index);
+		if (el) {
+			const input = el.querySelector("input") || el;
+			(input as HTMLInputElement).focus();
+		}
+	});
+	// #endif
+	// #ifndef H5
+	// 小程序环境：通过 uni.createSelectorQuery 聚焦
 	nextTick(() => {
 		uni.createSelectorQuery()
-			.selectAll(".otp-input-item")
-			.fields({ id: true, node: true })
-			.exec((res) => {
-				const nodes = res[0];
-				if (nodes && nodes[index] && nodes[index].id) {
-					const query = uni.createSelectorQuery();
-					query.select("#" + nodes[index].id).fields({ node: true, focus: true }).exec((args) => {
-						if (args[0] && args[0].node) {
-							args[0].node.focus?.();
-						}
-					});
+			.select("#otp-input-" + index)
+			.fields({ node: true, focus: true })
+			.exec((res: any) => {
+				if (res[0]?.node) {
+					res[0].node.focus?.();
 				}
 			});
 	});
+	// #endif
 };
 
 const onInput = (event: any, index: number) => {
@@ -88,7 +95,7 @@ const onInput = (event: any, index: number) => {
 	// 自动聚焦下一个
 	if (char && index < props.length - 1) {
 		focusIndex.value = index + 1;
-		focusNextInput(index + 1);
+		focusInput(index + 1);
 	}
 
 	if (finalValue.length === props.length) {
@@ -100,7 +107,7 @@ const onKeyDown = (event: any, index: number) => {
 	// 处理删除键
 	if (event.detail.key === "Backspace" && !codeArray.value[index] && index > 0) {
 		focusIndex.value = index - 1;
-		focusNextInput(index - 1);
+		focusInput(index - 1);
 	}
 };
 </script>
