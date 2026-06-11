@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# 检查 commit message 是否符合 conventional commits 规范
+cd "d:/luopeng/git/uni-app-uview/uni_backend_uview"
+npx --no-install commitlint --edit "$1"
