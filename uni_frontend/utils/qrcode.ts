@@ -57,19 +57,32 @@ export async function generateQRCode(text: string, width = 200, height = 200): P
 	// #endif
 
 	// #ifndef H5
+	// 小程序环境：使用 uQRCode 本地生成二维码，避免患者信息泄露给第三方
 	return new Promise((resolve, reject) => {
-		uni.request({
-			url: "https://api.uomg.com/api/qrcode",
-			data: { text, width, height },
-			success: (res: any) => {
-				if (res.data.code === 1) {
-					resolve(res.data.data);
-				} else {
-					reject(new Error(res.data.msg || "生成二维码失败"));
-				}
-			},
-			fail: reject,
-		});
+		try {
+			const size = Math.min(width, height);
+			const qr = new UQRCode({
+				data: text,
+				size: size,
+			});
+			qr.make();
+
+			const ctx = uni.createCanvasContext("qrcode-canvas");
+			qr.canvasContext = ctx;
+			qr.drawCanvas(() => {
+				uni.canvasToTempFilePath({
+					canvasId: "qrcode-canvas",
+					width: size,
+					height: size,
+					success: (res: any) => {
+						resolve(res.tempFilePath);
+					},
+					fail: reject,
+				});
+			});
+		} catch (e) {
+			reject(e);
+		}
 	});
 	// #endif
 }
