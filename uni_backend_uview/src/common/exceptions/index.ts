@@ -1,9 +1,9 @@
 /**
- * Cool-Admin 通用异常类
+ * 业务异常类
  */
-export class CoolCommException extends Error {
+export class BizException extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'CoolCommException';
+    this.name = 'BizException';
   }
 }

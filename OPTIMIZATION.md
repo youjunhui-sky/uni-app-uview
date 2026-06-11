@@ -11,31 +11,34 @@
 ### 3. sms.config.example.ts 泄露密钥
 - [x] ~~[sms.config.example.ts:9](uni_backend_uview/src/config/sms.config.example.ts#L9) — 清除示例文件中的真实 AccessKeySecret 片段，同时轮换阿里云 AccessKey~~ **已删除文件**
 
-### 4. 第三方 HTTP API 泄露隐私
-- [x] ~~[qrcode.ts:66](uni_frontend/utils/qrcode.ts#L66) — 非 H5 端改为本地生成二维码，避免 patientNo 泄露给 api.uomg.com~~ **已改为 uqrcodejs 本地生成**
+### 4. 第三方 HTTP API 泄露隐私 ✅
+- [x] 非 H5 端已改为 uqrcodejs 本地生成
+
+### 5. Cool 命名遗留 ✅
+- [x] CoolCommException → BizException
 
 ---
 
 ## 🟡 中优先级（代码质量）
 
-### 5. any 类型泛滥
+### 6. any 类型泛滥
 - [ ] 为核心 API 层（useService.ts）和 store 定义 interface
 
-### 6. useRequest.ts 和 useService.ts 重复
-- [x] ~~合并 HTTP 请求逻辑，删除重复代码~~ **已删除 useRequest.ts（无引用），合并入口**
+### 7. useRequest.ts 和 useService.ts 重复 ✅
+- [x] 已删除 useRequest.ts（零引用）
 
-### 7. 生产环境 console.log 过多
-- [x] ~~封装 logger 工具，生产环境关闭调试日志~~ **已创建 utils/logger.ts，useService.ts 已替换**
+### 8. 生产环境 console.log 过多 ✅
+- [x] 已创建 utils/logger.ts，useService.ts 已替换
 
-### 8. 患者页面新旧版本并存
+### 9. 患者页面新旧版本并存
 - [ ] 删除旧版本 addPatient.vue、mgnPatient.vue
 
 ---
 
 ## 🟢 低优先级（长期改进）
 
-### 9. 缺少 API 层类型定义
+### 10. 缺少 API 层类型定义
 - [ ] 为每个模块定义 ApiClient interface
 
-### 10. 无单元测试
+### 11. 无单元测试
 - [ ] 为核心业务逻辑添加单元测试

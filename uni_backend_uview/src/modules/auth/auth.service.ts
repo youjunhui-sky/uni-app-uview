@@ -7,7 +7,7 @@ import { v4 as uuid } from 'uuid';
 import { UserInfoEntity } from '../../entities/user-info.entity';
 import { PatientUserEntity } from '../../entities/patient-user.entity';
 import { PatientInfoEntity } from '../../entities/patient-info.entity';
-import { CoolCommException } from '../../common/exceptions';
+import { BizException } from '../../common/exceptions';
 import { SmsService } from '../../common/sms/sms.service';
 
 // 简单的内存缓存实现（与8081的midwayCache行为一致）
@@ -47,7 +47,7 @@ export class AuthService {
     // 1、检查短信验证码
     const check = this.checkSmsCode(phone, smsCode);
     if (!check) {
-      throw new CoolCommException('验证码错误');
+      throw new BizException('验证码错误');
     }
 
     // 2、查询或创建用户
@@ -126,7 +126,7 @@ export class AuthService {
     // 1、检查图片验证码
     const check = this.captchaCheck(captchaId, code);
     if (!check) {
-      throw new CoolCommException('图片验证码错误');
+      throw new BizException('图片验证码错误');
     }
 
     // 2、生成短信验证码（随机4位）
@@ -135,7 +135,7 @@ export class AuthService {
     // 3、通过阿里云短信服务发送验证码
     const result = await this.smsService.sendSmsCode(phone, smsCode);
     if (!result.success) {
-      throw new CoolCommException(result.message || '短信发送失败，请稍后重试');
+      throw new BizException(result.message || '短信发送失败，请稍后重试');
     }
 
     // 4、缓存短信验证码（5分钟过期）
@@ -185,12 +185,12 @@ export class AuthService {
     try {
       const info = this.jwtService.verify(refreshToken);
       if (!info['isRefresh']) {
-        throw new CoolCommException('token类型非refreshToken');
+        throw new BizException('token类型非refreshToken');
       }
 
       const userInfo = await this.userInfoEntity.findOneBy({ id: info['sub'] });
       if (!userInfo) {
-        throw new CoolCommException('用户不存在');
+        throw new BizException('用户不存在');
       }
 
       return this.token({ id: userInfo.id });
