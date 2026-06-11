@@ -1,4 +1,5 @@
-import { Controller, Post, Get, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { UploadService } from './upload.service';
 
@@ -21,7 +22,8 @@ export class UploadController {
    */
   @Post('upload')
   @UseGuards(JwtAuthGuard)
-  async upload(@Body() body: any) {
-    return this.uploadService.upload(body);
+  @UseInterceptors(FileInterceptor('file'))
+  async upload(@UploadedFile() file: Express.Multer.File) {
+    return this.uploadService.upload(file);
   }
 }

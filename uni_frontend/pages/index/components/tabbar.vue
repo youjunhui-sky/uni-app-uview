@@ -62,29 +62,7 @@ const list = computed(() => {
 });
 
 function toLink(pagePath: string) {
-	const to = (link: string) => {
-		// #ifdef H5
-		location.href = link;
-		// #endif
-
-		// #ifdef APP-PLUS
-		plus.runtime.openURL(link);
-		// #endif
-	};
-
-	switch (pagePath) {
-		case "cool":
-			to("https://cool-js.com");
-			break;
-
-		case "admin":
-			to("https://iulm.com.cn");
-			break;
-
-		default:
-			router.push("/" + pagePath);
-			break;
-	}
+	router.push("/" + pagePath);
 }
 
 uni.hideTabBar();

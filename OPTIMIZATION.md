@@ -42,3 +42,9 @@
 
 ### 11. 无单元测试
 - [ ] 为核心业务逻辑添加单元测试
+
+### 12. tabbar.vue 残留 cool-js.com 跳转
+- [x] ~~[tabbar.vue:77](uni_frontend/pages/index/components/tabbar.vue#L77) — 清理死代码~~ **已简化 toLink 函数**
+
+### 13. 文件上传后端为 mock
+- [x] ~~[upload.service.ts:24](uni_backend_uview/src/modules/upload/upload.service.ts#L24) — 实现真正的本地文件上传~~ **已用 multer 实现本地保存，main.ts 暴露 /uploads 静态资源**
