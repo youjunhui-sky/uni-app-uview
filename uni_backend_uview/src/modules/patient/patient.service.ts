@@ -166,13 +166,25 @@ export class PatientService {
 
   /**
    * 设置默认就诊人 (与8081一致)
+   * @param data.userId 用户ID
+   * @param data.patientNo 档案号（不是 patient_user 关联表的 id！）
    */
-  async updateDefault(data: { userId: number; patientUserId: string }): Promise<void> {
+  async updateDefault(data: { userId: number; patientNo: string }): Promise<void> {
+    if (!data.userId || !data.patientNo) {
+      throw new Error('userId 和 patientNo 不能为空');
+    }
     await this.updateDefaultByUserId(data.userId, 0);
-    await this.patientUserEntity.update(
-      { userId: data.userId, patientNo: data.patientUserId },
+    const result = await this.patientUserEntity.update(
+      { userId: data.userId, patientNo: data.patientNo },
       { default: 1 }
     );
+    // TypeORM 静默处理 0 行受影响：若 patientNo 拼错 / 该用户下没这条档案，
+    // 上面 update 不会抛错。这里强制校验，避免上游以为成功了。
+    if (!result.affected || result.affected === 0) {
+      throw new Error(
+        `设置默认就诊人失败：未找到 userId=${data.userId} patientNo=${data.patientNo} 的关联记录`,
+      );
+    }
   }
 
   /**

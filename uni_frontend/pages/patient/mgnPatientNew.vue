@@ -146,7 +146,7 @@ function setCurrent(item: PatientItem) {
 	service.patient.patientUser
 		.updateDefault({
 			userId: userStore.info?.id,
-			patientUserId: currentPatient.patientNo,
+			patientNo: currentPatient.patientNo,
 		})
 		.then((res: any) => {
 			logger.log("updateDefault response:", res);
@@ -172,29 +172,38 @@ function remove(item: PatientItem) {
 		success: async (res) => {
 			if (res.confirm) {
 				try {
+					// 删除前先记一下：被删的这个人是不是"当前默认"
+					const wasDefault = currentId.value === item.id;
+					const deletedPatientNo = item.patientNo;
+
 					await service.patient.patientUser.delete({
 						ids: [item.id],
 					});
 					showTips("删除成功");
 					await loadPatients();
 
-					logger.log("def = " + currentId);
-					if(currentId.value != null && currentId.value != ''){
+					logger.log("wasDefault = " + wasDefault + ", deletedPatientNo = " + deletedPatientNo);
 
-					}else{
+					// 只有"删的就是默认 + 还有别的就诊人"才需要自动晋升
+					if (wasDefault && patients.value.length > 0) {
 						const noDefPatient = patients.value[0];
-						if(noDefPatient != null && noDefPatient.id != ''){
-							logger.log("noDefPatient = " + noDefPatient.name);
-							service.patient.patientUser
-								.updateDefault({
-									userId: userStore.info?.id,
-									patientNo: noDefPatient.patientNo,
-								})
-								.then(() => {
-									loadPatients();
+						logger.log("noDefPatient = " + noDefPatient.name);
+						// 后端 updateDefault 期望 patientNo（档案号），与 tpatient_user.id 不同
+						await service.patient.patientUser
+							.updateDefault({
+								userId: userStore.info?.id,
+								patientNo: noDefPatient.patientNo,
+							})
+							.then(() => {
+								storage.set("currentPatient", noDefPatient);
+								loadPatients();
+							})
+							.catch((err: any) => {
+								logger.error("自动设置新默认就诊人失败:", err);
 							});
-							storage.set("currentPatient", noDefPatient);
-						}
+					} else if (patients.value.length === 0) {
+						// 删光了，清空缓存里的当前就诊人
+						storage.remove("currentPatient");
 					}
 				} catch (e) {
 					showTips("删除失败");

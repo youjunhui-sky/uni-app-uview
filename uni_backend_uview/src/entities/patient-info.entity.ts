@@ -25,9 +25,8 @@ export class PatientInfoEntity {
   @UpdateDateColumn({ name: 'updated_at', comment: '更新时间' })
   updatedAt: Date;
 
-  @Column({ name: 'org_id', type: 'uuid', nullable: true, comment: '组织ID' })
-  orgId: string;
-
+  // 注：mdp 库 base.tbus_patient_info 实际 DDL 不含 org_id（已与 mdp-ddl.txt 对齐），
+  // 保留会触发 INSERT 失败：column PatientInfoEntity.org_id does not exist
   @Column({ name: 'patient_no', comment: '档案号', length: 20 })
   patientNo: string;
 

@@ -42,6 +42,7 @@ export class PatientInfoController {
    * POST /app/patient/patientInfo/getByIdCardAndName
    */
   @Post('patientInfo/getByIdCardAndName')
+  @UseGuards(JwtAuthGuard)
   async getByIdCardAndName(@Body() body: { idCard: string; name: string }) {
     return this.patientService.getByIdCardAndName(body.idCard, body.name);
   }
