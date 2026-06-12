@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull } from 'typeorm';
+import { Repository } from 'typeorm';
 import { MuaInfoEntity } from '../../entities/mua-info.entity';
 import { MuaContentEntity } from '../../entities/mua-content.entity';
 
@@ -16,7 +16,7 @@ export class EtiologyService {
   /**
    * 根据档案号查询代谢评估信息 (与8081一致)
    */
-  async getMuaInfoByPatientNo(patientNo: string, tenantId: number = 0): Promise<any[]> {
+  async getMuaInfoByPatientNo(patientNo: string): Promise<any[]> {
     const queryBuilder = this.muaInfoEntity
       .createQueryBuilder('a')
       .select([
@@ -50,7 +50,6 @@ export class EtiologyService {
         'a."assessmentType" AS "assessmentType"',
       ])
       .where('a."patientNo" = :patientNo', { patientNo })
-      .andWhere('(a."tenantId" IS NULL OR a."tenantId" = :tenantId)', { tenantId })
       .andWhere('a."deletedAt" IS NULL')
       .orderBy('a."assessmentDate"', 'DESC');
 
@@ -65,10 +64,7 @@ export class EtiologyService {
     swlNo: string;
     assessmentCount?: number;
     assessmentType?: string;
-    tenantId?: number;
   }): Promise<any> {
-    const tenantId = params.tenantId || 0;
-
     const queryBuilder = this.muaContentEntity
       .createQueryBuilder('a')
       .select([
@@ -99,12 +95,6 @@ export class EtiologyService {
       queryBuilder.andWhere('a."assessmentType" = :assessmentType', {
         assessmentType: params.assessmentType,
       });
-    }
-
-    if (tenantId === 0) {
-      queryBuilder.andWhere('a."tenantId" IS NULL');
-    } else {
-      queryBuilder.andWhere('a."tenantId" = :tenantId', { tenantId });
     }
 
     queryBuilder.orderBy('a."assessmentType"', 'DESC').limit(1);

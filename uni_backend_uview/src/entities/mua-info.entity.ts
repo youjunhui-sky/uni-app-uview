@@ -166,7 +166,4 @@ export class MuaInfoEntity {
   /** mdp 新增列 */
   @Column({ name: 'anatomy_abnormality', comment: '解剖异常详情', type: 'text', nullable: true })
   anatomyAbnormality: string;
-
-  @Column({ name: 'tenant_id', comment: '租户ID', type: 'int', nullable: true })
-  tenantId: number;
 }

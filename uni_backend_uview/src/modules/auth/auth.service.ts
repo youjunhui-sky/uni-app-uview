@@ -97,7 +97,6 @@ export class AuthService {
       .createQueryBuilder('a')
       .select([
         'a.id as "id"',
-        'a.tenantId as "tenantId"',
         'a.patientNo as "patientNo"',
         'a.userId as "userId"',
         'a.default as "default"',
@@ -111,7 +110,7 @@ export class AuthService {
       .leftJoin(
         PatientInfoEntity,
         'b',
-        'a."patientNo" = b."patientNo" and COALESCE(a."tenantId", 0) = COALESCE(b."tenantId", 0)'
+        'a."patientNo" = b."patientNo"'
       );
 
     queryBuilder.andWhere('a."userId" = :userId', { userId: userId });

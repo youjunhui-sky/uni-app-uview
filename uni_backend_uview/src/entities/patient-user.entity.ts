@@ -37,7 +37,4 @@ export class PatientUserEntity {
 
   @Column({ name: 'default', comment: '是否默认 0-否 1-是', type: 'int', default: 0 })
   default: number;
-
-  @Column({ name: 'tenantId', comment: '租户ID', type: 'int', nullable: true })
-  tenantId: number;
 }

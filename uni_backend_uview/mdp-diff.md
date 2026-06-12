@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS base.tpatient_user (
 | 17 | `npx tsc --noEmit` 验证 | ✅（修复 1 处 patient.service.ts:230 `parseInt`） |
 | 18 | `npx nest build` 验证 | ✅ |
 | 19 | 追加 `MIGRATION_PLAN.md` 章节 | ✅ |
-| 20 | git commit（按节奏拆 1-3 个 commit） | ⬜ |
+| 20 | git commit（按节奏拆 1-3 个 commit） | ✅ 合并 1 个 commit：88699ad |
 
 ---
 
@@ -173,4 +173,5 @@ CREATE TABLE IF NOT EXISTS base.tpatient_user (
 
 | # | 提出时间 | 内容 | 状态 |
 |---|---|---|---|
-| | | | |
+| 1 | 2026/06/12 | `base.tpatient_user` 去掉 `tenantId` 字段（用户确认无租户隔离需求） | ✅（含 JOIN/select 同步清理） |
+| 2 | 2026/06/12 | `mua.tetiology_mua_info` 去掉 `tenant_id` 字段；`etiology.service.ts` 同步清理 `tenantId` 过滤逻辑 | ✅ |

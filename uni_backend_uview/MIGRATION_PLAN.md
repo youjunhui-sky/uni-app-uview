@@ -438,8 +438,7 @@ CREATE TABLE IF NOT EXISTS base.tpatient_user (
   org_id       UUID,
   "patientNo"  VARCHAR(20) NOT NULL,
   "userId"     INT NOT NULL,
-  "default"    INT NOT NULL DEFAULT 0,
-  "tenantId"   INT
+  "default"    INT NOT NULL DEFAULT 0
 );
 ```
 
