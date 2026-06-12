@@ -12,6 +12,7 @@ import { EtiologyModule } from './modules/etiology/etiology.module';
 import { DictModule } from './modules/dict/dict.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { BaseModule } from './modules/base/base.module';
+import { SwlModule } from './modules/swl/register/swl.module';
 import { SmsModule } from './common/sms/sms.module';
 
 @Module({
@@ -37,6 +38,7 @@ import { SmsModule } from './common/sms/sms.module';
     DictModule,
     UploadModule,
     BaseModule,
+    SwlModule,
 
     // 公共模块
     SmsModule,
