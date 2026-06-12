@@ -14,12 +14,12 @@ CREATE TABLE IF NOT EXISTS base.tuser_info (
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
   org_id        UUID,
   unionid       VARCHAR,
-  "avatarUrl"   VARCHAR,
-  "nickName"    VARCHAR,
+  avatar_url    VARCHAR,
+  nick_name     VARCHAR,
   phone         VARCHAR,
   gender        SMALLINT NOT NULL DEFAULT 0,
   status        SMALLINT NOT NULL DEFAULT 1,
-  "loginType"   SMALLINT NOT NULL DEFAULT 0,
+  login_type    SMALLINT NOT NULL DEFAULT 0,
   password      VARCHAR,
   description   TEXT
 );

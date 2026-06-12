@@ -33,10 +33,10 @@ export class UserInfoEntity {
   @Column({ comment: '登录唯一ID', nullable: true })
   unionid: string;
 
-  @Column({ name: 'avatarUrl', comment: '头像', nullable: true })
+  @Column({ name: 'avatar_url', comment: '头像', nullable: true })
   avatarUrl: string;
 
-  @Column({ name: 'nickName', comment: '昵称', nullable: true })
+  @Column({ name: 'nick_name', comment: '昵称', nullable: true })
   nickName: string;
 
   @Index({ unique: true })
@@ -49,7 +49,7 @@ export class UserInfoEntity {
   @Column({ comment: '状态', type: 'smallint', default: 1 })
   status: number;
 
-  @Column({ name: 'loginType', comment: '登录方式', type: 'smallint', default: 0 })
+  @Column({ name: 'login_type', comment: '登录方式', type: 'smallint', default: 0 })
   loginType: number;
 
   @Column({ comment: '密码', nullable: true })

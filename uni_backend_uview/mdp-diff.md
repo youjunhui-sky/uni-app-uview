@@ -99,17 +99,16 @@ CREATE TABLE IF NOT EXISTS base.tuser_info (
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
   org_id        UUID,
   unionid       VARCHAR,                       -- 索引 UNIQUE（与现 entity 一致）
-  "avatarUrl"   VARCHAR,
-  "nickName"    VARCHAR,
+  avatar_url    VARCHAR,
+  nick_name     VARCHAR,
   phone         VARCHAR,                       -- 索引 UNIQUE
   gender        SMALLINT NOT NULL DEFAULT 0,
   status        SMALLINT NOT NULL DEFAULT 1,
-  "loginType"   SMALLINT NOT NULL DEFAULT 0,
+  login_type    SMALLINT NOT NULL DEFAULT 0,
   password      VARCHAR,
   description   TEXT
 );
--- 注：loginType/avatarUrl/nickName/description 这 4 个业务字段沿用现 entity 的 camelCase
--- 如需统一 snake_case 化（login_type/avatar_url/nick_name/...）请告诉我，我同步改 entity @Column
+-- 注：业务字段统一 snake_case
 
 -- 3. tpatient_user（mdp 里没有）
 CREATE TABLE IF NOT EXISTS base.tpatient_user (
