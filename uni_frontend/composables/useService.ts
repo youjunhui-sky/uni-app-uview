@@ -271,6 +271,20 @@ export const service = {
 					data,
 				}),
 		},
+		questionnaire: {
+			getAnswer: (data: any) =>
+				request({
+					url: getBaseUrl() + "/app/patient/questionnaire/getAnswer",
+					method: "POST",
+					data,
+				}),
+			submitAnswer: (data: any) =>
+				request({
+					url: getBaseUrl() + "/app/patient/questionnaire/submitAnswer",
+					method: "POST",
+					data,
+				}),
+		},
 		info: {
 			page: (data: any) =>
 				request({
@@ -286,15 +300,15 @@ export const service = {
 				}),
 		},
 		questionnaire: {
-			getQuestionnaireAnswerByPatientNoAndQuestionnaireId: (data: any) =>
+			getAnswer: (data: any) =>
 				request({
-					url: getBaseUrl() + "/app/patient/questionnaire/getQuestionnaireAnswerByPatientNoAndQuestionnaireId",
+					url: getBaseUrl() + "/app/patient/questionnaire/getAnswer",
 					method: "POST",
 					data,
 				}),
-			submitQuestionnaireAnswer: (data: any) =>
+			submitAnswer: (data: any) =>
 				request({
-					url: getBaseUrl() + "/app/patient/questionnaire/submitQuestionnaireAnswer",
+					url: getBaseUrl() + "/app/patient/questionnaire/submitAnswer",
 					method: "POST",
 					data,
 				}),

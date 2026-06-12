@@ -5,6 +5,7 @@ import { QuestionnaireEntity } from '../../entities/questionnaire.entity';
 import { QuestionEntity } from '../../entities/question.entity';
 import { OptionEntity } from '../../entities/option.entity';
 import { BaseSysParamEntity } from '../../entities/sys-param.entity';
+import { BizException } from '../../common/exceptions';
 
 @Injectable()
 export class QuestionnaireService {
@@ -20,7 +21,8 @@ export class QuestionnaireService {
   ) {}
 
   /**
-   * 根据问卷ID获取问卷列表和对应的选项 (与8081一致)
+   * 根据问卷ID获取问卷列表和对应的选项
+   * 与8081保持一致：未传 id 时从系统参数 questionnaireId 取默认
    */
   async getQuestionsWithOptions(id?: number): Promise<any> {
     // 如果未提供 id，则从系统参数中获取默认问卷ID
@@ -36,18 +38,18 @@ export class QuestionnaireService {
     }
 
     if (!id || Number.isNaN(Number(id))) {
-      return null;
+      throw new BizException('未配置默认问卷ID（base.tsys_param.questionnaireId）');
     }
 
     // 基础问卷信息
     const questionnaire = await this.questionnaireEntity.findOneBy({ id });
     if (!questionnaire) {
-      return null;
+      throw new BizException(`问卷不存在（id=${id}）`);
     }
 
-    // 如果问卷未发布，则返回null (与8081一致，使用 == 比较)
+    // 未发布时显式抛错，避免前端"加载失败"无下文
     if (questionnaire.published == false) {
-      return null;
+      throw new BizException(`问卷未发布（id=${id}，title=${questionnaire.title}）`);
     }
 
     // 获取问题列表（升序）

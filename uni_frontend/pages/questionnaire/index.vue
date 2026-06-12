@@ -254,7 +254,7 @@ async function checkExistingAnswer(): Promise<void> {
 	const qid = questionnaire.value?.id
 	if (!patientNo || !qid) return
 	try {
-		const res: any = await service.patient.questionnaire.getQuestionnaireAnswerByPatientNoAndQuestionnaireId({
+		const res: any = await service.patient.questionnaire.getAnswer({
 			patientNo,
 			questionnaireId: qid,
 		})
@@ -548,7 +548,7 @@ async function doSubmit() {
 		return
 	}
 	try {
-		await service.patient.questionnaire.submitQuestionnaireAnswer({
+		await service.patient.questionnaire.submitAnswer({
 			patientNo,
 			questionnaireId: questionnaire.value?.id,
 			...finalJson.value

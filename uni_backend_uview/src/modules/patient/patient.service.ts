@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull, Like, DataSource } from 'typeorm';
+import { Repository, IsNull, Like } from 'typeorm';
 import { PatientInfoEntity } from '../../entities/patient-info.entity';
 import { PatientUserEntity } from '../../entities/patient-user.entity';
+import { QuestionnaireAnswerEntity } from '../../entities/questionnaire-answer.entity';
+import { QuestionEntity } from '../../entities/question.entity';
+import { OptionEntity } from '../../entities/option.entity';
+import { BizException } from '../../common/exceptions';
 
 @Injectable()
 export class PatientService {
@@ -11,7 +15,12 @@ export class PatientService {
     private readonly patientInfoEntity: Repository<PatientInfoEntity>,
     @InjectRepository(PatientUserEntity)
     private readonly patientUserEntity: Repository<PatientUserEntity>,
-    private readonly dataSource: DataSource,
+    @InjectRepository(QuestionnaireAnswerEntity)
+    private readonly questionnaireAnswerEntity: Repository<QuestionnaireAnswerEntity>,
+    @InjectRepository(QuestionEntity)
+    private readonly questionEntity: Repository<QuestionEntity>,
+    @InjectRepository(OptionEntity)
+    private readonly optionEntity: Repository<OptionEntity>,
   ) {}
 
   /**
@@ -202,7 +211,7 @@ export class PatientService {
    * 分页查询患者 (与8081一致)
    */
   async pagePatient(params: any): Promise<any> {
-    const { size = 15, page = 1, name, patientNo, idCard, mobile, ...rest } = params;
+    const { size = 15, page = 1, name, patientNo, idCard, mobile } = params;
 
     const queryBuilder = this.patientInfoEntity.createQueryBuilder('g');
     queryBuilder.andWhere('g.deleted_at IS NULL');
@@ -257,6 +266,116 @@ export class PatientService {
     return await this.patientInfoEntity.find({
       where: { idCard, name, deletedAt: IsNull() },
     });
+  }
+
+  /**
+   * 拉取某就诊人某问卷的答案（带题目 options 便于前端渲染）
+   * 无记录返回 null
+   */
+  async getQuestionnaireAnswer(
+    patientNo: string,
+    questionnaireId: number,
+    requestUserId?: number,
+  ): Promise<any> {
+    if (!patientNo || !questionnaireId) {
+      throw new BizException('patientNo 和 questionnaireId 不能为空');
+    }
+    // 越权防御：仅允许查询自己 userId 下绑定过的档案
+    if (requestUserId) {
+      const owned = await this.patientUserEntity.findOne({
+        where: { userId: requestUserId, patientNo },
+      });
+      if (!owned) {
+        throw new BizException('该档案不在当前用户下，无权查看');
+      }
+    }
+
+    const record = await this.questionnaireAnswerEntity.findOne({
+      where: { patientNo, questionnaireId },
+      order: { updatedAt: 'DESC' },
+    });
+    if (!record) return null;
+
+    const rawAnswers: any[] = Array.isArray(record.answers?.answers) ? record.answers.answers : [];
+    if (rawAnswers.length === 0) {
+      return { id: record.id, questions: [] };
+    }
+
+    // 拉所有题目的 options，按 bh 拼回去
+    const questions = await this.questionEntity.find({ where: { questionnaireId } });
+    const questionIds = questions.map(q => q.id);
+    const options = questionIds.length
+      ? await this.optionEntity.find({ where: questionIds.map(id => ({ questionId: id })) })
+      : [];
+    const optionMap = new Map<number, OptionEntity[]>();
+    for (const o of options) {
+      const arr = optionMap.get(o.questionId) || [];
+      arr.push(o);
+      optionMap.set(o.questionId, arr);
+    }
+    const bhToQuestion = new Map<string, QuestionEntity>(questions.map(q => [String(q.bh), q]));
+
+    const enriched = rawAnswers.map((a: any) => {
+      const q = bhToQuestion.get(String(a.bh));
+      const opts = q ? (optionMap.get(q.id) || []).map(o => ({
+        content: o.content,
+        sort: o.sort,
+        option: o.bh,
+        other: o.other,
+      })) : [];
+      return { ...a, options: opts };
+    });
+
+    return { id: record.id, questions: enriched };
+  }
+
+  /**
+   * 提交/更新某就诊人某问卷答案（同 patientNo+questionnaireId 二次提交 = 更新）
+   * 用 PG 原生 ON CONFLICT 兜底并发，配合 uq_questionnaire_answer_patient_q 唯一索引
+   */
+  async submitQuestionnaireAnswer(
+    patientNo: string,
+    questionnaireId: number,
+    answers: any,
+    requestUserId?: number,
+  ): Promise<any> {
+    if (!patientNo || !questionnaireId) {
+      throw new BizException('patientNo 和 questionnaireId 不能为空');
+    }
+    if (requestUserId) {
+      const owned = await this.patientUserEntity.findOne({
+        where: { userId: requestUserId, patientNo },
+      });
+      if (!owned) {
+        throw new BizException('该档案不在当前用户下，无权提交');
+      }
+    }
+
+    // answers 形如 { answers: [...] }，与前端 finalJson 对齐
+    const payload = answers && typeof answers === 'object' && Array.isArray(answers.answers)
+      ? answers
+      : { answers: Array.isArray(answers) ? answers : [] };
+
+    // 先查一下，确认是 insert 还是 update（仅用于返回 updated 标记）
+    const existing = await this.questionnaireAnswerEntity.findOne({
+      where: { patientNo, questionnaireId },
+    });
+
+    // 原生 upsert：依赖 (patient_no, questionnaire_id) 唯一索引，并发安全
+    await this.questionnaireAnswerEntity
+      .createQueryBuilder()
+      .insert()
+      .into(QuestionnaireAnswerEntity)
+      .values({ patientNo, questionnaireId, answers: payload })
+      .orUpdate(['answers', 'updated_at'], ['patient_no', 'questionnaire_id'])
+      .execute();
+
+    // 再读一次拿 id
+    const after = await this.questionnaireAnswerEntity.findOne({
+      where: { patientNo, questionnaireId },
+      select: ['id'],
+    });
+    return { id: after?.id, updated: !!existing };
   }
 
   // 内部方法
