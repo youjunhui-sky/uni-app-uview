@@ -90,6 +90,7 @@ export interface Service {
 	patient: PatientService;
 	questionnaire: QuestionnaireService;
 	etiology: EtiologyService;
+	swl: SwlService;
 	dict: DictService;
 	base: BaseService;
 }
@@ -144,6 +145,13 @@ export interface EtiologyService {
 	muaInfo: {
 		getMuaInfoByPatientNo: (data: any) => Promise<any>;
 		getMuaContentByPatientNoAndSwlNo: (data: any) => Promise<any>;
+	};
+}
+
+export interface SwlService {
+	register: {
+		getByPatientNo: (data: any) => Promise<any>;
+		getById: (id: number) => Promise<any>;
 	};
 }
 
@@ -338,6 +346,22 @@ export const service = {
 					url: getBaseUrl() + "/app/etiology/muaInfo/getMuaContentByPatientNoAndSwlNo",
 					method: "POST",
 					data,
+				}),
+		},
+	},
+
+	swl: {
+		register: {
+			getByPatientNo: (data: any) =>
+				request({
+					url: getBaseUrl() + "/app/swl/register/getByPatientNo",
+					method: "POST",
+					data,
+				}),
+			getById: (id: number) =>
+				request({
+					url: getBaseUrl() + `/app/swl/register/${id}`,
+					method: "GET",
 				}),
 		},
 	},

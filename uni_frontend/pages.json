@@ -46,6 +46,42 @@
 					"style": {
 						"navigationBarTitleText": "代谢评估详情"
 					}
+				},
+				{
+					"path": "swl-detail",
+					"style": {
+						"navigationBarTitleText": "SWL 诊疗详情"
+					}
+				},
+				{
+					"path": "swl-detail/sqbl/info",
+					"style": {
+						"navigationBarTitleText": "术前病历"
+					}
+				},
+				{
+					"path": "swl-detail/treatment/record",
+					"style": {
+						"navigationBarTitleText": "治疗记录"
+					}
+				},
+				{
+					"path": "swl-detail/ultrasound",
+					"style": {
+						"navigationBarTitleText": "超声报告"
+					}
+				},
+				{
+					"path": "swl-detail/followup",
+					"style": {
+						"navigationBarTitleText": "随访记录"
+					}
+				},
+				{
+					"path": "swl-detail/composition",
+					"style": {
+						"navigationBarTitleText": "结石成分"
+					}
 				}
 			]
 		},
