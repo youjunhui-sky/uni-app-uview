@@ -1,6 +1,7 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { EtiologyService } from './etiology.service';
+import { Request } from 'express';
 
 @Controller('app/etiology')
 export class EtiologyController {
@@ -12,8 +13,12 @@ export class EtiologyController {
    */
   @Post('muaInfo/getMuaInfoByPatientNo')
   @UseGuards(JwtAuthGuard)
-  async getMuaInfoByPatientNo(@Body() body: { patientNo: string }) {
-    return this.etiologyService.getMuaInfoByPatientNo(body.patientNo);
+  async getMuaInfoByPatientNo(@Body() body: { patientNo: string }, @Req() req: Request) {
+    const user = req.user as any;
+    return this.etiologyService.getMuaInfoByPatientNo(
+      body.patientNo,
+      user?.sub || user?.id,
+    );
   }
 
   /**
@@ -22,7 +27,11 @@ export class EtiologyController {
    */
   @Post('muaInfo/getMuaContentByPatientNoAndSwlNo')
   @UseGuards(JwtAuthGuard)
-  async getMuaContentByPatientNoAndSwlNo(@Body() body: any) {
-    return this.etiologyService.getMuaContentByPatientNoAndSwlNo(body);
+  async getMuaContentByPatientNoAndSwlNo(@Body() body: any, @Req() req: Request) {
+    const user = req.user as any;
+    return this.etiologyService.getMuaContentByPatientNoAndSwlNo({
+      ...body,
+      _requestUserId: user?.sub || user?.id,
+    });
   }
 }

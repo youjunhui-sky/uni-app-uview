@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MuaInfoEntity } from '../../entities/mua-info.entity';
 import { MuaContentEntity } from '../../entities/mua-content.entity';
+import { PatientUserEntity } from '../../entities/patient-user.entity';
+import { BizException } from '../../common/exceptions';
 
 @Injectable()
 export class EtiologyService {
@@ -11,12 +13,36 @@ export class EtiologyService {
     private readonly muaInfoEntity: Repository<MuaInfoEntity>,
     @InjectRepository(MuaContentEntity)
     private readonly muaContentEntity: Repository<MuaContentEntity>,
+    @InjectRepository(PatientUserEntity)
+    private readonly patientUserEntity: Repository<PatientUserEntity>,
   ) {}
 
   /**
-   * 根据档案号查询代谢评估信息 (与8081一致)
+   * 越权防御：校验 patientNo 归属当前 userId
+   * 与 getAnswer 行为一致
    */
-  async getMuaInfoByPatientNo(patientNo: string): Promise<any[]> {
+  private async assertPatientOwned(patientNo: string, requestUserId: number | undefined): Promise<void> {
+    if (!requestUserId) {
+      // 没拿到 jwt 上下文，理论上 controller 已被 JwtAuthGuard 拦住，这里只是兜底
+      return;
+    }
+    const owned = await this.patientUserEntity.findOne({
+      where: { userId: requestUserId, patientNo },
+    });
+    if (!owned) {
+      throw new BizException('该档案不在当前用户下，无权查看');
+    }
+  }
+
+  /**
+   * 根据档案号查询代谢评估信息
+   */
+  async getMuaInfoByPatientNo(patientNo: string, requestUserId?: number): Promise<any[]> {
+    if (!patientNo) {
+      throw new BizException('patientNo 不能为空');
+    }
+    await this.assertPatientOwned(patientNo, requestUserId);
+
     const queryBuilder = this.muaInfoEntity
       .createQueryBuilder('a')
       .select([
@@ -57,14 +83,23 @@ export class EtiologyService {
   }
 
   /**
-   * 根据档案号、碎石号、评估次数、评估类型查询代谢评估内容 (与8081一致)
+   * 根据档案号、碎石号、评估次数、评估类型查询代谢评估内容
    */
   async getMuaContentByPatientNoAndSwlNo(params: {
     patientNo: string;
     swlNo: string;
     assessmentCount?: number;
     assessmentType?: string;
+    _requestUserId?: number;
   }): Promise<any> {
+    if (!params.patientNo) {
+      throw new BizException('patientNo 不能为空');
+    }
+    if (!params.swlNo) {
+      throw new BizException('swlNo 不能为空');
+    }
+    await this.assertPatientOwned(params.patientNo, params._requestUserId);
+
     const queryBuilder = this.muaContentEntity
       .createQueryBuilder('a')
       .select([
