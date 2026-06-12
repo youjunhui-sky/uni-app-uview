@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
+import { buildDatabaseConfig } from './config/database.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { PatientModule } from './modules/patient/patient.module';
@@ -15,17 +16,9 @@ import { SmsModule } from './common/sms/sms.module';
 
 @Module({
   imports: [
-       // 数据库配置
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST || '36.111.159.23',
-      port: parseInt(process.env.DB_PORT || '5432'),
-      username: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASSWORD || '1223',
-      database: process.env.DB_NAME || 'herisdb',
-      entities: [__dirname + '/entities/*.entity{.ts,.js}', __dirname + '/**/entities/*.entity{.ts,.js}'],
-      synchronize: false,
-      logging: process.env.NODE_ENV === 'development',
+    // 数据库配置 - 详见 ./config/database.config.ts
+    TypeOrmModule.forRootAsync({
+      useFactory: () => buildDatabaseConfig(),
     }),
 
     // JWT 配置
