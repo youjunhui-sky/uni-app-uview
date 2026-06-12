@@ -15,7 +15,7 @@ import { SwlDiagnosis } from './entity/swl-diagnosis.entity';
 import { SwlNearFollowup } from './entity/swl-near-followup.entity';
 import { SwlFutureFollowup } from './entity/swl-future-followup.entity';
 import { SwlCurative } from './entity/swl-curative.entity';
-import { SwlStoneComponent } from './entity/swl-stone-component.entity';
+import { StoneComponentEntity } from './entity/swl-stone-component.entity';
 import { PatientInfoEntity } from '../../../entities/patient-info.entity';
 
 import { SwlRegisterController } from './controller/swl-register.controller';
@@ -78,7 +78,7 @@ import { SwlStoneComponentService } from './service/composition-services';
       SwlNearFollowup,
       SwlFutureFollowup,
       SwlCurative,
-      SwlStoneComponent,
+      StoneComponentEntity,
       PatientInfoEntity,
     ]),
   ],

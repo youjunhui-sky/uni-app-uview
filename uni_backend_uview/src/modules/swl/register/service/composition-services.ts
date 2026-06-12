@@ -1,13 +1,13 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { SwlStoneComponent } from '../entity/swl-stone-component.entity';
+import { StoneComponentEntity } from '../entity/swl-stone-component.entity';
 
 @Injectable()
 export class SwlStoneComponentService {
   constructor(
-    @InjectRepository(SwlStoneComponent)
-    private readonly repo: Repository<SwlStoneComponent>,
+    @InjectRepository(StoneComponentEntity)
+    private readonly repo: Repository<StoneComponentEntity>,
   ) {}
 
   async findBySwlNo(swlNo: string, serialNumber?: string) {
