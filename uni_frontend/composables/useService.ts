@@ -161,6 +161,17 @@ export interface SwlService {
 		findBySwlNo: (data: { swlNo: string; serialNumber?: string }) => Promise<any>;
 		findById: (id: number) => Promise<any>;
 	};
+	sqbl: {
+		currentHistory: { findBySwlNo: (d: any) => Promise<any>; findById: (id: number) => Promise<any> };
+		pastMedicalHistory: { findBySwlNo: (d: any) => Promise<any>; findById: (id: number) => Promise<any> };
+		familyHistory: { findBySwlNo: (d: any) => Promise<any>; findById: (id: number) => Promise<any> };
+		pastStoneHistory: { findBySwlNo: (d: any) => Promise<any>; findById: (id: number) => Promise<any> };
+		personalHistory: { findBySwlNo: (d: any) => Promise<any>; findById: (id: number) => Promise<any> };
+		menstrualMarriageHistory: { findBySwlNo: (d: any) => Promise<any>; findById: (id: number) => Promise<any> };
+		vitalSigns: { findBySwlNo: (d: any) => Promise<any>; findById: (id: number) => Promise<any> };
+		labResult: { findBySwlNo: (d: any) => Promise<any>; findById: (id: number) => Promise<any> };
+		diagnosis: { findBySwlNo: (d: any) => Promise<any>; findById: (id: number) => Promise<any> };
+	};
 }
 
 export interface DictService {
@@ -397,6 +408,53 @@ export const service = {
 					url: getBaseUrl() + `/app/swl/imaging/${id}`,
 					method: "GET",
 				}),
+		},
+		sqbl: {
+			currentHistory: {
+				findBySwlNo: (d: any) => request({ url: getBaseUrl() + "/app/swl/currentHistory/findBySwlNo", method: "POST", data: d }),
+				findById: (id: number) => request({ url: getBaseUrl() + `/app/swl/currentHistory/${id}`, method: "GET" }),
+			},
+			pastMedicalHistory: {
+				findBySwlNo: (d: any) => request({ url: getBaseUrl() + "/app/swl/pastMedicalHistory/findBySwlNo", method: "POST", data: d }),
+				findById: (id: number) => request({ url: getBaseUrl() + `/app/swl/pastMedicalHistory/${id}`, method: "GET" }),
+			},
+			familyHistory: {
+				findBySwlNo: (d: any) => request({ url: getBaseUrl() + "/app/swl/familyHistory/findBySwlNo", method: "POST", data: d }),
+				findById: (id: number) => request({ url: getBaseUrl() + `/app/swl/familyHistory/${id}`, method: "GET" }),
+			},
+			pastStoneHistory: {
+				findBySwlNo: (d: any) => request({ url: getBaseUrl() + "/app/swl/pastStoneHistory/findBySwlNo", method: "POST", data: d }),
+				findById: (id: number) => request({ url: getBaseUrl() + `/app/swl/pastStoneHistory/${id}`, method: "GET" }),
+			},
+			personalHistory: {
+				findBySwlNo: (d: any) => request({ url: getBaseUrl() + "/app/swl/personalHistory/findBySwlNo", method: "POST", data: d }),
+				findById: (id: number) => request({ url: getBaseUrl() + `/app/swl/personalHistory/${id}`, method: "GET" }),
+			},
+			menstrualMarriageHistory: {
+				findBySwlNo: (d: any) => request({ url: getBaseUrl() + "/app/swl/menstrualMarriageHistory/findBySwlNo", method: "POST", data: d }),
+				findById: (id: number) => request({ url: getBaseUrl() + `/app/swl/menstrualMarriageHistory/${id}`, method: "GET" }),
+			},
+			vitalSigns: {
+				findBySwlNo: (d: any) => request({ url: getBaseUrl() + "/app/swl/vitalSigns/findBySwlNo", method: "POST", data: d }),
+				findById: (id: number) => request({ url: getBaseUrl() + `/app/swl/vitalSigns/${id}`, method: "GET" }),
+			},
+			labResult: {
+				findBySwlNo: (d: any) => request({ url: getBaseUrl() + "/app/swl/labResult/findBySwlNo", method: "POST", data: d }),
+				findById: (id: number) => request({ url: getBaseUrl() + `/app/swl/labResult/${id}`, method: "GET" }),
+			},
+			diagnosis: {
+				findBySwlNo: (d: any) => request({ url: getBaseUrl() + "/app/swl/diagnosis/findBySwlNo", method: "POST", data: d }),
+				findById: (id: number) => request({ url: getBaseUrl() + `/app/swl/diagnosis/${id}`, method: "GET" }),
+			},
+		},
+		followup: {
+			near: { findBySwlNo: (d: any) => request({ url: getBaseUrl() + "/app/swl/nearFollowup/findBySwlNo", method: "POST", data: d }), findById: (id: number) => request({ url: getBaseUrl() + `/app/swl/nearFollowup/${id}`, method: "GET" }) },
+			future: { findBySwlNo: (d: any) => request({ url: getBaseUrl() + "/app/swl/futureFollowup/findBySwlNo", method: "POST", data: d }), findById: (id: number) => request({ url: getBaseUrl() + `/app/swl/futureFollowup/${id}`, method: "GET" }) },
+			curative: { findBySwlNo: (d: any) => request({ url: getBaseUrl() + "/app/swl/curative/findBySwlNo", method: "POST", data: d }), findById: (id: number) => request({ url: getBaseUrl() + `/app/swl/curative/${id}`, method: "GET" }) },
+		},
+		composition: {
+			findBySwlNo: (d: any) => request({ url: getBaseUrl() + "/app/swl/stoneComponent/findBySwlNo", method: "POST", data: d }),
+			findById: (id: number) => request({ url: getBaseUrl() + `/app/swl/stoneComponent/${id}`, method: "GET" }),
 		},
 	},
 
