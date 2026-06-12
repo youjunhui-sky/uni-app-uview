@@ -153,6 +153,14 @@ export interface SwlService {
 		getByPatientNo: (data: any) => Promise<any>;
 		getById: (id: number) => Promise<any>;
 	};
+	treatment: {
+		findBySwlNo: (data: { swlNo: string; serialNumber?: string; episode?: number }) => Promise<any>;
+		findById: (id: number) => Promise<any>;
+	};
+	imaging: {
+		findBySwlNo: (data: { swlNo: string; serialNumber?: string }) => Promise<any>;
+		findById: (id: number) => Promise<any>;
+	};
 }
 
 export interface DictService {
@@ -361,6 +369,32 @@ export const service = {
 			getById: (id: number) =>
 				request({
 					url: getBaseUrl() + `/app/swl/register/${id}`,
+					method: "GET",
+				}),
+		},
+		treatment: {
+			findBySwlNo: (data: any) =>
+				request({
+					url: getBaseUrl() + "/app/swl/treatment/findBySwlNo",
+					method: "POST",
+					data,
+				}),
+			findById: (id: number) =>
+				request({
+					url: getBaseUrl() + `/app/swl/treatment/${id}`,
+					method: "GET",
+				}),
+		},
+		imaging: {
+			findBySwlNo: (data: any) =>
+				request({
+					url: getBaseUrl() + "/app/swl/imaging/findBySwlNo",
+					method: "POST",
+					data,
+				}),
+			findById: (id: number) =>
+				request({
+					url: getBaseUrl() + `/app/swl/imaging/${id}`,
 					method: "GET",
 				}),
 		},
