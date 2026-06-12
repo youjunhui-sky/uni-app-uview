@@ -327,3 +327,152 @@ uni_backend_uview/
 | 日期 | 版本 | 变更内容 |
 |------|------|----------|
 | 2026/06/07 | v0.1 | 初始化文档 |
+| 2026/06/12 | v0.2 | 数据库切换至 mdp 库（多 schema 布局），详见 [十一、mdp 库迁移](#十一mdp-库迁移) |
+
+---
+
+## 十一、mdp 库迁移
+
+> 目标库：`mdp`（同 PG 实例 `36.111.159.23:5432`，账号 `postgres/1223`）
+> 执行日期：2026/06/12
+> 详细列级 diff：[mdp-diff.md](./mdp-diff.md)
+> introspect 脚本：[scripts/dump-mdp-ddl.js](./scripts/dump-mdp-ddl.js)；原始输出：[mdp-ddl.txt](./mdp-ddl.txt)
+
+### 11.1 决策
+
+| 决策点 | 决定 |
+|---|---|
+| user_info 新表名 | `tuser_info`（mdp 当前不存在，需先建表） |
+| 实体字段命名 | 保留 camelCase，用 `@Column({ name: 'patient_no' })` 映射到 snake_case 列 |
+| `base.ts` | 删除（11 个实体自包含主键 + 审计字段） |
+| `synchronize` | 保持 `false` |
+| SWL schema | 本轮不动 |
+| 跨 schema JOIN | 无需特殊处理，所有跨表 JOIN 都在 `base` 内部 |
+| API 兼容性 | 代谢评估的 `swlNo` 入参/出参 alias 保留，前端零改动；列引用内部改为 `mua_no` |
+
+### 11.2 schema 映射（11 张表）
+
+**`base` schema（9 张表）**：
+
+| 实体 | 表名 | PK 类型 |
+|---|---|---|
+| `UserInfoEntity` | `tuser_info` | serial int |
+| `PatientUserEntity` | `tpatient_user` | serial int |
+| `PatientInfoEntity` | `tbus_patient_info` | **uuid** |
+| `QuestionnaireEntity` | `tsys_questionnaire` | serial int |
+| `QuestionEntity` | `tsys_question` | serial int |
+| `OptionEntity` | `tsys_option` | serial int |
+| `BaseSysParamEntity` | `tsys_param` | **bigint** |
+| `DictTypeEntity` | `tsys_dict_type` | **bigint** |
+| `DictInfoEntity` | `tsys_dict_info` | **bigint** |
+
+**`mua` schema（2 张表）**：
+
+| 实体 | 表名 | PK 类型 |
+|---|---|---|
+| `MuaInfoEntity` | `tetiology_mua_info` | serial int |
+| `MuaContentEntity` | `tetiology_mua_content` | serial int |
+
+### 11.3 共性改动
+
+所有 11 个实体都做了：
+1. 去掉 `extends BaseEntity`，删除 `base.ts` 文件
+2. 自包含 `id`（按表决定 PK 类型）/`createdAt`（→ `created_at`）/`updatedAt`（→ `updated_at`）
+3. `@Entity({ name, schema, comment })` 加 `schema: 'base' | 'mua'`
+4. 新增 `orgId` 字段（uuid，可空；`tsys_option` 表除外）
+5. 所有 `@Column` 的 `name` 改成 snake_case
+
+### 11.4 表级重要差异
+
+| 表 | 关键差异 |
+|---|---|
+| `base.tuser_info` | mdp 中不存在，需手工建表（DDL 见下） |
+| `base.tpatient_user` | mdp 中不存在，需手工建表（DDL 见下） |
+| `base.tbus_patient_info` | **PK 改为 uuid**；新增 `zipCode`/`idType` |
+| `base.tsys_questionnaire` | `creator_id` 改可空；新增 `org_id` |
+| `base.tsys_option` | `score` 改可空；mdp 此表无 `org_id`，实体不增 |
+| `base.tsys_param` | **PK 改为 bigint**；`data_type` 默认值 1 → 0 |
+| `base.tsys_dict_type` | **PK 改为 bigint**；新增 `status`/`module`/`org_id` |
+| `base.tsys_dict_info` | **PK 改为 bigint**；`type_id` int → bigint；`parent_id` int → **varchar(100)**（业务侧需要把数字当字符串用） |
+| `mua.tetiology_mua_info` | `swl_no` → `mua_no`；新增 `gender`/`anatomy_abnormality`/`org_id` |
+| `mua.tetiology_mua_content` | `swl_no` → `mua_no`；新增 `org_id` |
+
+### 11.5 Service 改动
+
+- [dict.service.ts:45](./src/modules/dict/dict.service.ts#L45) `addOrderBy('a.createTime')` → `addOrderBy('a.created_at')`
+- [patient.service.ts:121-122, 132-133](./src/modules/patient/patient.service.ts#L121) 对象字面量的 `createTime`/`updateTime` → `createdAt`/`updatedAt`
+- [patient.service.ts:230](./src/modules/patient/patient.service.ts#L230) `findOneBy({ id: parseInt(id) })` → `findOneBy({ id })`（因 PK 改 uuid）
+- [etiology.service.ts:25, 77, 90](./src/modules/etiology/etiology.service.ts#L25) `'a."swlNo"'` → `'a.mua_no'`（列引用新名，alias 保留 `swlNo` 不破坏 API）
+
+### 11.6 切库前需要在 mdp 库执行的 DDL
+
+```sql
+-- 1. schema
+CREATE SCHEMA IF NOT EXISTS base;
+CREATE SCHEMA IF NOT EXISTS mua;
+
+-- 2. tuser_info（mdp 中没有，按现 user-info.entity.ts 结构建）
+CREATE TABLE IF NOT EXISTS base.tuser_info (
+  id            SERIAL PRIMARY KEY,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  org_id        UUID,
+  unionid       VARCHAR,
+  "avatarUrl"   VARCHAR,
+  "nickName"    VARCHAR,
+  phone         VARCHAR,
+  gender        SMALLINT NOT NULL DEFAULT 0,
+  status        SMALLINT NOT NULL DEFAULT 1,
+  "loginType"   SMALLINT NOT NULL DEFAULT 0,
+  password      VARCHAR,
+  description   TEXT
+);
+CREATE UNIQUE INDEX IF NOT EXISTS tuser_info_unionid_unique ON base.tuser_info(unionid);
+CREATE UNIQUE INDEX IF NOT EXISTS tuser_info_phone_unique    ON base.tuser_info(phone);
+
+-- 3. tpatient_user（mdp 中没有）
+CREATE TABLE IF NOT EXISTS base.tpatient_user (
+  id           SERIAL PRIMARY KEY,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  org_id       UUID,
+  "patientNo"  VARCHAR(20) NOT NULL,
+  "userId"     INT NOT NULL,
+  "default"    INT NOT NULL DEFAULT 0,
+  "tenantId"   INT
+);
+```
+
+### 11.7 切库步骤
+
+1. **停服**（或切到只读模式）
+2. **mdp 库执行 11.6 的 DDL**（建 schema + 建 tuser_info + 建 tpatient_user）
+3. **修改 `database.config.ts` 的 `database` 默认值**：`'herisdb'` → `'mdp'`（或通过 `DB_NAME=mdp` 环境变量注入）
+4. **启动后端**：`npm run start:dev`，观察启动日志确认连接到 `mdp`
+5. **冒烟测试**：
+   - auth：图形验证码 → 手机号+验证码登录 → 拿 token
+   - patient：列就诊人、新建就诊人、设为默认、拉详情（验 uuid id）
+   - questionnaire：拉问卷列表、拉问卷详情
+   - etiology：按 `patientNo` 拉代谢评估（验 mua 跨 schema 查询）；按 `swlNo` 拉详情（验列引用改 mua_no）
+   - dict：拿字典类型、拿字典数据（验 bigint id 和 varchar parent_id）
+   - base：拿协议参数、上传文件
+6. **观察 1~2 天后**，herisdb 改只读或下线
+
+### 11.8 风险
+
+| 风险 | 触发条件 | 缓解 |
+|---|---|---|
+| `DictInfoEntity.parentId` 类型变更（int → varchar） | 业务代码把 parentId 当数字用 | 上线前 grep 所有引用方，改为字符串处理 |
+| `BaseSysParamEntity.id` 改 bigint | 前端按 int 解析会精度丢失（>2^31） | 确认前端解析方式（JSON.parse 默认是 number，超 16 位会丢精度） |
+| 业务侧期望 PK 是 number，但 tbus_patient_info 改 uuid | 任何传 `parseInt(patientId)` 的代码 | grep 整个仓库，替换为字符串处理 |
+| 上线时切库瞬间连接断 | 用户态事务 | 选低峰期切换；切换期间 herisdb 改只读兜底 |
+| mdp 缺少 tuser_info / tpatient_user | 没跑 11.6 的 DDL | 切库前必跑，启后端后第一次登录验证 |
+
+### 11.9 回滚方案
+
+1. 把 `database.config.ts` 的 `database` 改回 `'herisdb'`
+2. 重启后端
+3. 业务继续走 herisdb（migrate 出去的代码因为 entity 改了，所以**回滚到 herisdb 后会有列名不匹配**，需要同时回滚代码）
+
+**建议**：回滚前先 `git revert` 当前 mdp 迁移的 commit，再切回 herisdb。
+

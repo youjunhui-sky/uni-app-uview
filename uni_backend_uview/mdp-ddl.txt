@@ -1,0 +1,191 @@
+-- mdp 库 DDL 导出
+-- host: 36.111.159.23 database: mdp
+
+
+========== base.tuser_info ==========
+!! 表 base.tuser_info 不存在 !!
+
+========== base.tpatient_user ==========
+!! 表 base.tpatient_user 不存在 !!
+
+========== base.tbus_patient_info ==========
+patient_no                   character varying(20)        NOT NULL 
+name                         character varying(30)        NULL 
+id_card                      character varying(18)        NULL 
+gender                       smallint(16,0)               NULL DEFAULT 0
+birth_date                   date                         NULL 
+native_province              character varying(20)        NULL 
+native_city                  character varying(20)        NULL 
+native_district              character varying(20)        NULL 
+native_address               character varying(100)       NULL 
+zip_code                     character varying(6)         NULL 
+current_province             character varying(20)        NULL 
+current_city                 character varying(20)        NULL 
+current_district             character varying(20)        NULL 
+current_address              character varying(100)       NULL 
+telephone                    character varying(20)        NULL 
+mobile                       character varying(20)        NULL 
+occupation                   character varying(20)        NULL 
+last_visit                   timestamp without time zone  NULL 
+register_date                date                         NOT NULL 
+deleted_at                   timestamp without time zone  NULL 
+created_at                   timestamp with time zone     NULL DEFAULT now()
+updated_at                   timestamp with time zone     NULL DEFAULT now()
+id_type                      character varying(10)        NULL 
+id                           uuid                         NOT NULL DEFAULT gen_random_uuid()
+PK: id
+IDX: tbus_patient_info_pkey | CREATE UNIQUE INDEX tbus_patient_info_pkey ON base.tbus_patient_info USING btree (id)
+IDX: idx_patient_info_mobile | CREATE INDEX idx_patient_info_mobile ON base.tbus_patient_info USING btree (mobile)
+IDX: idx_patient_info_patient_no | CREATE INDEX idx_patient_info_patient_no ON base.tbus_patient_info USING btree (patient_no)
+
+========== base.tsys_questionnaire ==========
+id                           integer(32,0)                NOT NULL DEFAULT nextval('base.tsys_questionnaire_id_seq'::regclass)
+title                        character varying(255)       NOT NULL 
+description                  text                         NULL 
+creator_id                   integer(32,0)                NULL 
+published                    boolean                      NULL DEFAULT false
+deleted_at                   timestamp without time zone  NULL 
+sort                         integer(32,0)                NULL DEFAULT 0
+created_at                   timestamp with time zone     NULL DEFAULT now()
+updated_at                   timestamp with time zone     NULL DEFAULT now()
+org_id                       uuid                         NULL 
+PK: id
+IDX: tsys_questionnaire_pkey | CREATE UNIQUE INDEX tsys_questionnaire_pkey ON base.tsys_questionnaire USING btree (id)
+
+========== base.tsys_question ==========
+id                           integer(32,0)                NOT NULL DEFAULT nextval('base.tsys_question_id_seq'::regclass)
+questionnaire_id             integer(32,0)                NOT NULL 
+title                        character varying(500)       NOT NULL 
+type                         character varying(20)        NOT NULL 
+sort                         integer(32,0)                NULL DEFAULT 0
+required                     boolean                      NULL DEFAULT false
+jump                         text                         NULL 
+bh                           character varying(50)        NOT NULL 
+created_at                   timestamp with time zone     NULL DEFAULT now()
+updated_at                   timestamp with time zone     NULL DEFAULT now()
+org_id                       uuid                         NULL 
+PK: id
+IDX: tsys_question_pkey | CREATE UNIQUE INDEX tsys_question_pkey ON base.tsys_question USING btree (id)
+
+========== base.tsys_option ==========
+id                           integer(32,0)                NOT NULL DEFAULT nextval('base.tsys_option_id_seq'::regclass)
+questionnaire_id             integer(32,0)                NOT NULL 
+question_id                  integer(32,0)                NOT NULL 
+content                      character varying(255)       NOT NULL 
+sort                         integer(32,0)                NULL DEFAULT 0
+score                        integer(32,0)                NULL 
+bh                           character varying(50)        NOT NULL 
+other                        boolean                      NULL DEFAULT false
+created_at                   timestamp with time zone     NULL DEFAULT now()
+updated_at                   timestamp with time zone     NULL DEFAULT now()
+PK: id
+IDX: tsys_option_pkey | CREATE UNIQUE INDEX tsys_option_pkey ON base.tsys_option USING btree (id)
+
+========== base.tsys_param ==========
+id                           bigint(64,0)                 NOT NULL DEFAULT nextval('base.sys_param_id_seq'::regclass)
+key_name                     character varying(100)       NOT NULL 
+name                         character varying(100)       NOT NULL 
+data                         text                         NULL 
+data_type                    integer(32,0)                NULL DEFAULT 0
+remark                       character varying(500)       NULL 
+org_id                       uuid                         NULL 
+created_at                   timestamp with time zone     NOT NULL DEFAULT now()
+updated_at                   timestamp with time zone     NOT NULL DEFAULT now()
+PK: id
+IDX: sys_param_pkey | CREATE UNIQUE INDEX sys_param_pkey ON base.tsys_param USING btree (id)
+
+========== base.tsys_dict_type ==========
+id                           bigint(64,0)                 NOT NULL DEFAULT nextval('base.sys_dict_type_id_seq'::regclass)
+name                         character varying(100)       NOT NULL 
+key                          character varying(100)       NOT NULL 
+created_at                   timestamp with time zone     NULL DEFAULT now()
+updated_at                   timestamp with time zone     NULL DEFAULT now()
+status                       smallint(16,0)               NULL DEFAULT 1
+org_id                       uuid                         NULL 
+module                       character varying(50)        NULL 
+PK: id
+IDX: sys_dict_type_pkey1 | CREATE UNIQUE INDEX sys_dict_type_pkey1 ON base.tsys_dict_type USING btree (id)
+
+========== base.tsys_dict_info ==========
+id                           bigint(64,0)                 NOT NULL DEFAULT nextval('base.sys_dict_info_id_seq'::regclass)
+name                         character varying(100)       NOT NULL 
+value                        character varying(255)       NULL 
+type_id                      bigint(64,0)                 NOT NULL 
+parent_id                    character varying(100)       NULL 
+order_num                    integer(32,0)                NULL DEFAULT 0
+remark                       character varying(500)       NULL 
+created_at                   timestamp with time zone     NULL DEFAULT now()
+updated_at                   timestamp with time zone     NULL DEFAULT now()
+status                       smallint(16,0)               NULL DEFAULT 1
+org_id                       uuid                         NULL 
+PK: id
+IDX: sys_dict_info_pkey1 | CREATE UNIQUE INDEX sys_dict_info_pkey1 ON base.tsys_dict_info USING btree (id)
+
+========== mua.tetiology_mua_info ==========
+id                           integer(32,0)                NOT NULL DEFAULT nextval('mua.tetiology_mua_info_id_seq'::regclass)
+patient_no                   character varying(20)        NOT NULL 
+mua_no                       character varying(20)        NULL 
+serial_number                character varying(50)        NULL 
+assessment_count             integer(32,0)                NULL 
+outpatient_no                character varying(20)        NULL 
+inpatient_no                 character varying(20)        NULL 
+bed_no                       character varying(20)        NULL 
+department                   character varying(50)        NULL 
+age                          character varying(10)        NULL 
+assessment_date              date                         NULL 
+height                       double precision(53,0)       NULL 
+weight                       double precision(53,0)       NULL 
+bmi                          double precision(53,0)       NULL 
+stone_history                text                         NULL 
+family_history               text                         NULL 
+other_history                text                         NULL 
+has_ultrasound               smallint(16,0)               NULL 
+has_kub                      smallint(16,0)               NULL 
+has_ct                       smallint(16,0)               NULL 
+has_mri                      smallint(16,0)               NULL 
+has_ctu                      smallint(16,0)               NULL 
+has_ivu                      smallint(16,0)               NULL 
+image_diagnosis              text                         NULL 
+anatomical_abnormal          character varying(50)        NULL 
+doctor                       character varying(20)        NULL 
+operator                     character varying(20)        NULL 
+ct_value                     double precision(53,0)       NULL 
+kub                          character varying(50)        NULL 
+stone_comp                   character varying(50)        NULL 
+other_stone_comp             character varying(200)       NULL 
+component1                   character varying(30)        NULL 
+component1_percent           double precision(53,0)       NULL 
+component2                   character varying(30)        NULL 
+component2_percent           double precision(53,0)       NULL 
+component3                   character varying(30)        NULL 
+component3_percent           double precision(53,0)       NULL 
+component4                   character varying(30)        NULL 
+component4_percent           double precision(53,0)       NULL 
+stone_location               character varying(50)        NULL 
+analysis_method              character varying(30)        NULL 
+analysis_date                date                         NULL 
+deleted_at                   timestamp without time zone  NULL 
+assessment_type              character varying(20)        NULL 
+gender                       integer(32,0)                NULL 
+anatomy_abnormality          text                         NULL 
+org_id                       uuid                         NULL 
+PK: id
+IDX: tetiology_mua_info_pkey | CREATE UNIQUE INDEX tetiology_mua_info_pkey ON mua.tetiology_mua_info USING btree (id)
+
+========== mua.tetiology_mua_content ==========
+id                           integer(32,0)                NOT NULL DEFAULT nextval('mua.tetiology_mua_content_id_seq'::regclass)
+patient_no                   character varying(20)        NOT NULL 
+mua_no                       character varying(20)        NULL 
+serial_number                character varying(50)        NULL 
+assessment_count             integer(32,0)                NULL 
+assessment_type              character varying(10)        NULL 
+assessment_result            text                         NULL 
+treatment_suggestion         text                         NULL 
+guide_suggestion             text                         NULL 
+ai_guide_suggestion          text                         NULL 
+doctor                       character varying(20)        NULL 
+operator                     character varying(20)        NULL 
+jbjx                         text                         NULL 
+org_id                       uuid                         NULL 
+PK: id
+IDX: tetiology_mua_content_pkey | CREATE UNIQUE INDEX tetiology_mua_content_pkey ON mua.tetiology_mua_content USING btree (id)

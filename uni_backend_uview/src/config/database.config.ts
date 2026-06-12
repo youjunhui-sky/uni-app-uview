@@ -16,7 +16,7 @@ export const buildDatabaseConfig = (): TypeOrmModuleOptions => ({
   port: parseInt(process.env.DB_PORT || '5432', 10),
   username: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || '1223',
-  database: process.env.DB_NAME || 'herisdb',
+  database: process.env.DB_NAME || 'mdp',
   entities: [
     __dirname + '/../entities/*.entity{.ts,.js}',
     __dirname + '/../**/entities/*.entity{.ts,.js}',

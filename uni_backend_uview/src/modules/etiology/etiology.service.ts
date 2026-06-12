@@ -22,7 +22,7 @@ export class EtiologyService {
       .select([
         'a."id" AS "id"',
         'a."patientNo" AS "patientNo"',
-        'a."swlNo" AS "swlNo"',
+        'a.mua_no AS "swlNo"',
         'a."serialNumber" AS "serialNumber"',
         'a."assessmentCount" AS "assessmentCount"',
         'a."outpatientNo" AS "outpatientNo"',
@@ -74,7 +74,7 @@ export class EtiologyService {
       .select([
         'a."id" AS "id"',
         'a."patientNo" AS "patientNo"',
-        'a."swlNo" AS "swlNo"',
+        'a.mua_no AS "swlNo"',
         'a."serialNumber" AS "serialNumber"',
         'a."assessmentCount" AS "assessmentCount"',
         'a."assessmentType" AS "assessmentType"',
@@ -87,7 +87,7 @@ export class EtiologyService {
         'a."jbjx" AS "jbjx"',
       ])
       .where('a."patientNo" = :patientNo', { patientNo: params.patientNo })
-      .andWhere('a."swlNo" = :swlNo', { swlNo: params.swlNo });
+      .andWhere('a.mua_no = :swlNo', { swlNo: params.swlNo });
 
     if (params.assessmentCount) {
       queryBuilder.andWhere('a."assessmentCount" = :assessmentCount', {

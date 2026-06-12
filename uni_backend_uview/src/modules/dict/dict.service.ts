@@ -42,7 +42,7 @@ export class DictService {
         typeIds: typeData.map(e => e.id),
       })
       .orderBy('a.orderNum', 'ASC')
-      .addOrderBy('a.createTime', 'ASC')
+      .addOrderBy('a.created_at', 'ASC')
       .getMany();
 
     for (const item of typeData) {

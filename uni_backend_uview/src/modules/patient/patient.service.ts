@@ -118,8 +118,8 @@ export class PatientService {
           mobile: params.mobile,
           occupation: params.occupation,
           registerDate,
-          createTime: now,
-          updateTime: now,
+          createdAt: now,
+          updatedAt: now,
         });
         params.patientNo = newPatientNo;
       }
@@ -129,8 +129,8 @@ export class PatientService {
       patientNo: params.patientNo,
       userId: params.userId,
       default: params.default === null || params.default === undefined || params.default === '' ? 0 : params.default,
-      createTime: new Date(),
-      updateTime: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     // 如果设置默认，先取消其他默认
@@ -225,9 +225,10 @@ export class PatientService {
 
   /**
    * 获取患者详情 (与8081一致)
+   * 注：mdp 中 tbus_patient_info.id 为 uuid（string），不再 parseInt
    */
   async getPatientInfo(id: string): Promise<any> {
-    return await this.patientInfoEntity.findOneBy({ id: parseInt(id) });
+    return await this.patientInfoEntity.findOneBy({ id });
   }
 
   /**
