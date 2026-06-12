@@ -28,11 +28,11 @@ export class PatientUserEntity {
   @Column({ name: 'org_id', type: 'uuid', nullable: true, comment: '组织ID' })
   orgId: string;
 
-  /** 业务字段沿用 camelCase（与 herisdb 一致） */
-  @Column({ name: 'patientNo', comment: '档案号', length: 20 })
+  /** 业务字段统一 snake_case */
+  @Column({ name: 'patient_no', comment: '档案号', length: 20 })
   patientNo: string;
 
-  @Column({ name: 'userId', comment: '用户ID', type: 'int' })
+  @Column({ name: 'user_id', comment: '用户ID', type: 'int' })
   userId: number;
 
   @Column({ name: 'default', comment: '是否默认 0-否 1-是', type: 'int', default: 0 })

@@ -22,23 +22,23 @@ export class PatientService {
       .createQueryBuilder('a')
       .select([
         'a.id as "id"',
-        'a.patientNo as "patientNo"',
-        'a.userId as "userId"',
+        'a.patient_no as "patientNo"',
+        'a.user_id as "userId"',
         'a.default as "default"',
-        'b."name" as "name"',
-        'b."idCard" as "idCard"',
-        'b."gender" as "gender"',
-        'b."mobile" as "mobile"',
-        'b."occupation" as "occupation"',
-        'b."id" as "patientId"',
+        'b.name as "name"',
+        'b.id_card as "idCard"',
+        'b.gender as "gender"',
+        'b.mobile as "mobile"',
+        'b.occupation as "occupation"',
+        'b.id as "patientId"',
       ])
       .leftJoin(
         PatientInfoEntity,
         'b',
-        'a."patientNo" = b."patientNo"'
+        'a.patient_no = b.patient_no'
       );
 
-    queryBuilder.andWhere('a."userId" = :userId', { userId: userId });
+    queryBuilder.andWhere('a.user_id = :userId', { userId: userId });
     return await queryBuilder.getRawMany();
   }
 
@@ -59,24 +59,24 @@ export class PatientService {
       .createQueryBuilder('a')
       .select([
         'a.id as "id"',
-        'a.patientNo as "patientNo"',
-        'a.userId as "userId"',
+        'a.patient_no as "patientNo"',
+        'a.user_id as "userId"',
         'a.default as "default"',
-        'b."name" as "name"',
-        'b."idCard" as "idCard"',
-        'b."gender" as "gender"',
-        'b."mobile" as "mobile"',
-        'b."occupation" as "occupation"',
-        'b."id" as "patientId"',
+        'b.name as "name"',
+        'b.id_card as "idCard"',
+        'b.gender as "gender"',
+        'b.mobile as "mobile"',
+        'b.occupation as "occupation"',
+        'b.id as "patientId"',
       ])
       .leftJoin(
         PatientInfoEntity,
         'b',
-        'a."patientNo" = b."patientNo"'
+        'a.patient_no = b.patient_no'
       );
 
-    queryBuilder.andWhere('a."userId" = :userId', { userId: params.userId });
-    queryBuilder.andWhere('a."patientNo" = :patientNo', { patientNo: params.patientNo });
+    queryBuilder.andWhere('a.user_id = :userId', { userId: params.userId });
+    queryBuilder.andWhere('a.patient_no = :patientNo', { patientNo: params.patientNo });
     return await queryBuilder.getRawMany();
   }
 
@@ -193,26 +193,26 @@ export class PatientService {
     const { size = 15, page = 1, name, patientNo, idCard, mobile, ...rest } = params;
 
     const queryBuilder = this.patientInfoEntity.createQueryBuilder('g');
-    queryBuilder.andWhere('g."deletedAt" IS NULL');
+    queryBuilder.andWhere('g.deleted_at IS NULL');
 
     if (name) {
-      queryBuilder.andWhere('g."name" LIKE :name', { name: `%${name}%` });
+      queryBuilder.andWhere('g.name LIKE :name', { name: `%${name}%` });
     }
     if (patientNo) {
-      queryBuilder.andWhere('g."patientNo" = :patientNo', { patientNo });
+      queryBuilder.andWhere('g.patient_no = :patientNo', { patientNo });
     }
     if (idCard) {
-      queryBuilder.andWhere('g."idCard" = :idCard', { idCard });
+      queryBuilder.andWhere('g.id_card = :idCard', { idCard });
     }
     if (mobile) {
-      queryBuilder.andWhere('g."mobile" = :mobile', { mobile });
+      queryBuilder.andWhere('g.mobile = :mobile', { mobile });
     }
 
     const total = await queryBuilder.getCount();
     const list = await queryBuilder
       .skip((page - 1) * size)
       .take(size)
-      .orderBy('g."registerDate"', 'DESC')
+      .orderBy('g.register_date', 'DESC')
       .getMany();
 
     return {

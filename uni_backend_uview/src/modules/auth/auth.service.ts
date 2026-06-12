@@ -97,23 +97,23 @@ export class AuthService {
       .createQueryBuilder('a')
       .select([
         'a.id as "id"',
-        'a.patientNo as "patientNo"',
-        'a.userId as "userId"',
+        'a.patient_no as "patientNo"',
+        'a.user_id as "userId"',
         'a.default as "default"',
-        'b."name" as "name"',
-        'b."idCard" as "idCard"',
-        'b."gender" as "gender"',
-        'b."mobile" as "mobile"',
-        'b."occupation" as "occupation"',
-        'b."id" as "patientId"',
+        'b.name as "name"',
+        'b.id_card as "idCard"',
+        'b.gender as "gender"',
+        'b.mobile as "mobile"',
+        'b.occupation as "occupation"',
+        'b.id as "patientId"',
       ])
       .leftJoin(
         PatientInfoEntity,
         'b',
-        'a."patientNo" = b."patientNo"'
+        'a.patient_no = b.patient_no'
       );
 
-    queryBuilder.andWhere('a."userId" = :userId', { userId: userId });
+    queryBuilder.andWhere('a.user_id = :userId', { userId: userId });
     return await queryBuilder.getRawMany();
   }
 
@@ -173,6 +173,9 @@ export class AuthService {
       value: svg.text.toLowerCase(),
       expireTime: Date.now() + 1800 * 1000,
     });
+
+    // TODO 冒烟测试临时日志：smoke test will revert
+    console.log(`[smoke-test] captchaId=${result.captchaId}, captchaText=${svg.text.toLowerCase()}`);
 
     return result;
   }

@@ -117,12 +117,11 @@ CREATE TABLE IF NOT EXISTS base.tpatient_user (
   created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
   org_id       UUID,
-  "patientNo"  VARCHAR(20) NOT NULL,
-  "userId"     INT NOT NULL,
-  "default"    INT NOT NULL DEFAULT 0,
-  "tenantId"   INT
+  patient_no   VARCHAR(20) NOT NULL,
+  user_id      INT NOT NULL,
+  "default"    INT NOT NULL DEFAULT 0
 );
--- 注：业务字段维持 camelCase
+-- 注：业务字段统一 snake_case
 ```
 
 ---
@@ -175,3 +174,5 @@ CREATE TABLE IF NOT EXISTS base.tpatient_user (
 |---|---|---|---|
 | 1 | 2026/06/12 | `base.tpatient_user` 去掉 `tenantId` 字段（用户确认无租户隔离需求） | ✅（含 JOIN/select 同步清理） |
 | 2 | 2026/06/12 | `mua.tetiology_mua_info` 去掉 `tenant_id` 字段；`etiology.service.ts` 同步清理 `tenantId` 过滤逻辑 | ✅ |
+| 3 | 2026/06/12 | 冒烟测试发现：service 里的 `b."patientNo"` / `b."idCard"` / `a."patientNo"` 列引用还是 camelCase，实体列名已改 snake_case，SQL 报 `column does not exist`。需要批量改列引用 | ✅ |
+| 4 | 2026/06/12 | `tpatient_user` 业务字段统一 snake_case：`patientNo`→`patient_no`、`userId`→`user_id`（`default` 保留，是 SQL 保留字） | ✅ |
